@@ -4,11 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.worldoflight.data.database.SupabaseClient
+import com.worldoflight.data.remote.SupabaseClient
+import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -30,7 +29,7 @@ class AuthRepository(private val context: Context) {
         )
     }
 
-    // Регистрация пользователя
+    // Регистрация пользователя с OTP
     suspend fun signUp(email: String, password: String, name: String): Result<Boolean> {
         return try {
             supabase.auth.signUpWith(Email) {
@@ -40,6 +39,41 @@ class AuthRepository(private val context: Context) {
                     put("name", name)
                 }
             }
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Подтверждение OTP кода
+    suspend fun verifyOtp(email: String, token: String): Result<Boolean> {
+        return try {
+            supabase.auth.verifyEmailOtp(
+                type = OtpType.Email.SIGNUP,
+                email = email,
+                token = token
+            )
+
+            // Сохраняем сессию после успешной верификации
+            val user = supabase.auth.currentUserOrNull()
+            if (user != null) {
+                saveUserSession(user.id, email)
+                Result.success(true)
+            } else {
+                Result.failure(Exception("Ошибка верификации"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Повторная отправка OTP кода
+    suspend fun resendOtp(email: String): Result<Boolean> {
+        return try {
+            supabase.auth.resendEmail(
+                type = OtpType.Email.SIGNUP,
+                email = email
+            )
             Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)
@@ -76,17 +110,6 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-    // Подтверждение OTP (упрощенная версия)
-    suspend fun verifyOtp(email: String, token: String): Result<Boolean> {
-        return try {
-            // Для демонстрации - всегда успешно
-            saveUserSession("demo_user_id", email)
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     // Выход пользователя
     suspend fun signOut(): Result<Unit> {
         return try {
@@ -117,10 +140,5 @@ class AuthRepository(private val context: Context) {
         encryptedPrefs.edit()
             .clear()
             .apply()
-    }
-
-    // Получение Flow состояния аутентификации
-    fun getAuthStateFlow(): Flow<Boolean> = flow {
-        emit(isUserLoggedIn())
     }
 }

@@ -31,15 +31,45 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             _errorMessage.value = null
 
             authRepository.signUp(email, password, name)
-                .onSuccess { user ->
-                    if (user != null) {
-                        _authState.value = AuthState.AwaitingVerification(email)
-                    } else {
-                        _errorMessage.value = "Ошибка при создании пользователя"
-                    }
+                .onSuccess {
+                    _authState.value = AuthState.AwaitingVerification(email)
                 }
                 .onFailure { error ->
                     _errorMessage.value = error.message ?: "Ошибка регистрации"
+                }
+
+            _isLoading.value = false
+        }
+    }
+
+    fun verifyOtp(email: String, token: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            authRepository.verifyOtp(email, token)
+                .onSuccess {
+                    _authState.value = AuthState.Authenticated
+                }
+                .onFailure { error ->
+                    _errorMessage.value = error.message ?: "Неверный код"
+                }
+
+            _isLoading.value = false
+        }
+    }
+
+    fun resendOtp(email: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            authRepository.resendOtp(email)
+                .onSuccess {
+                    _errorMessage.value = "Код отправлен повторно"
+                }
+                .onFailure { error ->
+                    _errorMessage.value = error.message ?: "Ошибка отправки кода"
                 }
 
             _isLoading.value = false
@@ -52,12 +82,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             _errorMessage.value = null
 
             authRepository.signIn(email, password)
-                .onSuccess { user ->
-                    if (user != null) {
-                        _authState.value = AuthState.Authenticated
-                    } else {
-                        _errorMessage.value = "Ошибка входа"
-                    }
+                .onSuccess {
+                    _authState.value = AuthState.Authenticated
                 }
                 .onFailure { error ->
                     _errorMessage.value = error.message ?: "Ошибка входа"
@@ -78,27 +104,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 .onFailure { error ->
                     _errorMessage.value = error.message ?: "Ошибка сброса пароля"
-                }
-
-            _isLoading.value = false
-        }
-    }
-
-    fun verifyOtp(email: String, token: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
-
-            authRepository.verifyOtp(email, token)
-                .onSuccess { user ->
-                    if (user != null) {
-                        _authState.value = AuthState.Authenticated
-                    } else {
-                        _errorMessage.value = "Ошибка подтверждения"
-                    }
-                }
-                .onFailure { error ->
-                    _errorMessage.value = error.message ?: "Неверный код"
                 }
 
             _isLoading.value = false

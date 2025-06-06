@@ -49,20 +49,23 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
 
-    // Supabase - используем стабильную версию 2.0.4
-    implementation(platform("io.github.jan-tennert.supabase:bom:2.0.4"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt")
 
-    // Ktor
-    implementation("io.ktor:ktor-client-android:2.3.4")
-    implementation("io.ktor:ktor-client-core:2.3.4")
+        // Supabase - используем стабильную версию
+        implementation(platform("io.github.jan-tennert.supabase:bom:2.6.0"))
+        implementation("io.github.jan-tennert.supabase:postgrest-kt")
+        implementation("io.github.jan-tennert.supabase:gotrue-kt")
 
-    // Kotlinx Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+        // Ktor
+        implementation("io.ktor:ktor-client-android:2.3.12")
+        implementation("io.ktor:ktor-client-core:2.3.12")
 
-    // Security
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+        // Kotlinx Serialization
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+        // Security
+        implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+
 
     // Image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
