@@ -1,5 +1,6 @@
 package com.worldoflight.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -24,6 +25,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Проверка аутентификации
+        if (!isUserLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -45,6 +52,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             setDisplayShowTitleEnabled(true)
             title = "Главная"
         }
+    }
+    private fun isUserLoggedIn(): Boolean {
+        // TODO: Проверка через SharedPreferences или Supabase
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        return prefs.getBoolean("is_logged_in", false)
     }
 
     private fun setupDrawer() {

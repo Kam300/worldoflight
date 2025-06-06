@@ -40,6 +40,26 @@
             android:name=".ui.activities.CartActivity"
             android:exported="false"
             android:parentActivityName=".ui.activities.MainActivity" />
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
+        <activity
+            android:name=".ui.activities.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
+        <activity
+            android:name=".ui.activities.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
+        <activity
+            android:name=".ui.activities.VerificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
 
 
     </application>
