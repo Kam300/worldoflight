@@ -4,20 +4,19 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.navigation.NavigationView
 import com.worldoflight.R
 import com.worldoflight.databinding.ActivityMainBinding
-import com.worldoflight.ui.fragments.ProductListFragment
-import com.worldoflight.ui.fragments.FavoritesFragment
-import com.worldoflight.ui.fragments.CartFragment
-import com.worldoflight.ui.fragments.NotificationsFragment
-import com.worldoflight.ui.fragments.ProfileFragment
+import com.worldoflight.ui.fragments.*
 import com.worldoflight.ui.viewmodels.CartViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var cartViewModel: CartViewModel
@@ -31,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
 
         setupToolbar()
+        setupDrawer()
         setupBottomNavigation()
         observeCartChanges()
 
@@ -45,27 +45,50 @@ class MainActivity : AppCompatActivity() {
             setDisplayShowTitleEnabled(true)
             title = "Главная"
         }
-
-        binding.toolbar.setNavigationOnClickListener {
-            // TODO: Открыть боковое меню
-        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar_menu, menu)
-        return true
+    private fun setupDrawer() {
+        val toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        binding.navView.setNavigationItemSelectedListener(this)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_cart -> {
-                selectNavItem(R.id.fab_cart)
-                supportActionBar?.title = "Корзина"
-                replaceFragment(CartFragment())
-                true
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_profile -> {
+                supportActionBar?.title = "Профиль"
+                replaceFragment(ProfileFragment())
             }
-            else -> super.onOptionsItemSelected(item)
+            R.id.nav_cart -> {
+                val intent = android.content.Intent(this, CartActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_favorites -> {
+                supportActionBar?.title = "Избранное"
+                replaceFragment(FavoritesFragment())
+            }
+            R.id.nav_orders -> {
+                android.widget.Toast.makeText(this, "Заказы", android.widget.Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_notifications -> {
+                supportActionBar?.title = "Уведомления"
+                replaceFragment(NotificationsFragment())
+            }
+            R.id.nav_settings -> {
+                android.widget.Toast.makeText(this, "Настройки", android.widget.Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_logout -> {
+                android.widget.Toast.makeText(this, "Выход", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
+
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
     private fun setupBottomNavigation() {
@@ -83,13 +106,11 @@ class MainActivity : AppCompatActivity() {
             replaceFragment(FavoritesFragment())
         }
 
-
-// Корзина (центральная кнопка)
+        // Корзина (центральная кнопка)
         binding.fabCart.setOnClickListener {
             val intent = android.content.Intent(this, CartActivity::class.java)
             startActivity(intent)
         }
-
 
         // Уведомления
         binding.navNotificationsContainer.setOnClickListener {
@@ -140,9 +161,6 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_profile_container -> {
                 binding.ivNavProfile.setColorFilter(ContextCompat.getColor(this, R.color.nav_icon_selected))
             }
-            R.id.fab_cart -> {
-                // FAB остается с фиксированным цветом
-            }
         }
 
         currentSelectedNav = selectedId
@@ -162,8 +180,16 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    override fun onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        cartViewModel.loadCartItems(this) // Обновляем счетчик при возвращении
+        cartViewModel.loadCartItems(this)
     }
 }
