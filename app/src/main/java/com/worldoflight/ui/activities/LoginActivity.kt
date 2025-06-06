@@ -2,19 +2,53 @@ package com.worldoflight.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.worldoflight.databinding.ActivityLoginBinding
+import com.worldoflight.ui.viewmodels.AuthState
+import com.worldoflight.ui.viewmodels.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupObservers()
         setupClickListeners()
+    }
+
+    private fun setupObservers() {
+        authViewModel.authState.observe(this) { state ->
+            when (state) {
+                is AuthState.Authenticated -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
+                is AuthState.Unauthenticated -> {
+                    // Остаемся на экране входа
+                }
+                else -> {
+                    // Обрабатываем другие состояния
+                }
+            }
+        }
+
+        authViewModel.isLoading.observe(this) { isLoading ->
+            binding.btnLogin.isEnabled = !isLoading
+            binding.btnLogin.text = if (isLoading) "Вход..." else "Войти"
+        }
+
+        authViewModel.errorMessage.observe(this) { error ->
+            error?.let {
+                android.widget.Toast.makeText(this, it, android.widget.Toast.LENGTH_LONG).show()
+                authViewModel.clearError()
+            }
+        }
     }
 
     private fun setupClickListeners() {
@@ -24,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
                 val password = etPassword.text.toString()
 
                 if (validateInput(email, password)) {
-                    performLogin(email, password)
+                    authViewModel.signIn(email, password)
                 }
             }
 
@@ -55,12 +89,5 @@ class LoginActivity : AppCompatActivity() {
         }
 
         return true
-    }
-
-    private fun performLogin(email: String, password: String) {
-        // TODO: Здесь будет логика аутентификации через Supabase
-        // Пока что просто переходим в главное приложение
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
     }
 }

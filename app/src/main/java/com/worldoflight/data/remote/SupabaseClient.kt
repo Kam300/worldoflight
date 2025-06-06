@@ -1,4 +1,4 @@
-package com.worldoflight.data.database
+package com.worldoflight.data.remote
 
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth

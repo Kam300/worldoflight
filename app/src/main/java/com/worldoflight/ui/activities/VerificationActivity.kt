@@ -4,12 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.worldoflight.databinding.ActivityVerificationBinding
+import com.worldoflight.ui.viewmodels.AuthState
+import com.worldoflight.ui.viewmodels.AuthViewModel
 
 class VerificationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityVerificationBinding
+    private val authViewModel: AuthViewModel by viewModels()
     private var email: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,13 +23,41 @@ class VerificationActivity : AppCompatActivity() {
 
         email = intent.getStringExtra("email") ?: ""
 
+        setupObservers()
         setupUI()
         setupClickListeners()
         setupOtpInput()
     }
 
+    private fun setupObservers() {
+        authViewModel.authState.observe(this) { state ->
+            when (state) {
+                is AuthState.Authenticated -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finishAffinity()
+                }
+                else -> {
+                    // Обрабатываем другие состояния
+                }
+            }
+        }
+
+        authViewModel.isLoading.observe(this) { isLoading ->
+            binding.btnVerify.isEnabled = !isLoading
+            binding.btnVerify.text = if (isLoading) "Проверка..." else "Подтвердить"
+        }
+
+        authViewModel.errorMessage.observe(this) { error ->
+            error?.let {
+                android.widget.Toast.makeText(this, it, android.widget.Toast.LENGTH_LONG).show()
+                authViewModel.clearError()
+                clearOtpFields()
+            }
+        }
+    }
+
     private fun setupUI() {
-        binding.tvSubtitle.text = "Пожалуйста Проверьте Свою\nЭлектронную Почту Чтобы Увидеть Код\nПодтверждения"
+        binding.tvSubtitle.text = "Код подтверждения отправлен на\n$email"
     }
 
     private fun setupClickListeners() {
@@ -37,12 +69,13 @@ class VerificationActivity : AppCompatActivity() {
             btnVerify.setOnClickListener {
                 val otp = getOtpCode()
                 if (validateOtp(otp)) {
-                    verifyOtp(otp)
+                    authViewModel.verifyOtp(email, otp)
                 }
             }
 
             tvResend.setOnClickListener {
-                resendOtp()
+                // TODO: Повторная отправка кода
+                android.widget.Toast.makeText(this@VerificationActivity, "Код отправлен повторно", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -60,6 +93,12 @@ class VerificationActivity : AppCompatActivity() {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if (s?.length == 1 && index < otpFields.size - 1) {
                         otpFields[index + 1].requestFocus()
+                    }
+
+                    // Автоматическая проверка при заполнении всех полей
+                    if (getOtpCode().length == 5) {
+                        val otp = getOtpCode()
+                        authViewModel.verifyOtp(email, otp)
                     }
                 }
 
@@ -88,14 +127,12 @@ class VerificationActivity : AppCompatActivity() {
         return true
     }
 
-    private fun verifyOtp(otp: String) {
-        // TODO: Верификация через Supabase
-        startActivity(Intent(this, MainActivity::class.java))
-        finishAffinity()
-    }
-
-    private fun resendOtp() {
-        // TODO: Повторная отправка кода
-        android.widget.Toast.makeText(this, "Код отправлен повторно", android.widget.Toast.LENGTH_SHORT).show()
+    private fun clearOtpFields() {
+        binding.etOtp1.text?.clear()
+        binding.etOtp2.text?.clear()
+        binding.etOtp3.text?.clear()
+        binding.etOtp4.text?.clear()
+        binding.etOtp5.text?.clear()
+        binding.etOtp1.requestFocus()
     }
 }

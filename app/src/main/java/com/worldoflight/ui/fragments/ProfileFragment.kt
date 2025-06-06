@@ -51,9 +51,8 @@ class ProfileFragment : Fragment() {
             profile?.let {
                 binding.apply {
                     tvUserName.text = it.name
-                    etFirstName.setText(it.name.split(" ").firstOrNull() ?: "")
-                    etLastName.setText(it.name.split(" ").lastOrNull() ?: "")
-                    etAddress.setText(it.address)
+                    etFirstName.setText(it.name?.split(" ")?.firstOrNull() ?: "")
+                    etLastName.setText(it.name?.split(" ")?.lastOrNull() ?: "")
                     etPhone.setText(it.phone)
                 }
             }

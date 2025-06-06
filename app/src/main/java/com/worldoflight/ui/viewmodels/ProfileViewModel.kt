@@ -28,11 +28,10 @@ class ProfileViewModel : ViewModel() {
 
                 // Временные данные
                 _userProfile.value = UserProfile(
-                    id = 1,
+                    id = 1.toString(),
                     name = "Emmanuel Oyiboke",
                     email = "emmanuel@example.com",
-                    phone = "+7 (999) 123-45-67",
-                    address = "Москва, ул. Примерная, д. 123"
+                    phone = "+7 (999) 123-45-67"
                 )
             } catch (e: Exception) {
                 _error.value = e.message
