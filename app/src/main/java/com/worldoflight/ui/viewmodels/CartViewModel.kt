@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.worldoflight.data.models.CartItem
 import com.worldoflight.utils.CartManager
 import kotlinx.coroutines.launch
+
 class CartViewModel : ViewModel() {
 
     private val _cartItems = MutableLiveData<List<CartItem>>()
@@ -68,21 +69,35 @@ class CartViewModel : ViewModel() {
         }
     }
 
+    fun clearCart(context: Context) {
+        viewModelScope.launch {
+            try {
+                CartManager.clearCart(context)
+                loadCartItems(context)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
+
     private fun calculateTotals(items: List<CartItem>) {
-        // Подсчет суммы товаров
+        // Подсчет суммы товаров (подытог)
         val subtotal = items.sumOf { it.price * it.quantity }
         _subtotalPrice.value = subtotal
 
         // Расчет доставки (бесплатная доставка от 1000 рублей)
-        val delivery = if (subtotal >= 1000.0) 0.0 else 60.20
+        val delivery = if (subtotal >= 1000.0) {
+            0.0
+        } else {
+            60.20 // Фиксированная стоимость доставки
+        }
         _deliveryFee.value = delivery
 
-        // Итого = сумма + доставка
+        // ИТОГО = СУММА ТОВАРОВ + ДОСТАВКА
         val total = subtotal + delivery
         _totalPrice.value = total
 
-        // Количество товаров
+        // Количество единиц товаров
         _itemsCount.value = items.sumOf { it.quantity }
     }
 }
-

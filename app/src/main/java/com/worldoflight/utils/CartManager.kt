@@ -25,11 +25,11 @@ object CartManager {
                 quantity = existingItem.quantity + quantity
             )
         } else {
-            // Добавляем новый товар
+            // Добавляем новый товар с указанным количеством
             val newCartItem = CartItem(
-                id = System.currentTimeMillis(), // Временный ID
+                id = System.currentTimeMillis(),
                 product_id = product.id,
-                user_id = 1, // Временный user ID
+                user_id = 1,
                 quantity = quantity,
                 price = product.price,
                 created_at = System.currentTimeMillis().toString(),
@@ -40,6 +40,7 @@ object CartManager {
 
         saveCartItems(context, currentItems)
     }
+
 
     fun removeFromCart(context: Context, cartItemId: Long) {
         val currentItems = getCartItems(context).toMutableList()

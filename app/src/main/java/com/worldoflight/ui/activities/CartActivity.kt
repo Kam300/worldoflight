@@ -105,14 +105,7 @@ class CartActivity : AppCompatActivity() {
                 binding.rvCartItems.visibility = android.view.View.VISIBLE
                 binding.checkoutLayout.visibility = android.view.View.VISIBLE
                 binding.emptyStateLayout.visibility = android.view.View.GONE
-
-                // Обновляем список без анимации для избежания пустых мест
-                cartAdapter.submitList(cartItems) {
-                    // Прокручиваем к началу если список изменился
-                    if (cartItems.isNotEmpty()) {
-                        binding.rvCartItems.scrollToPosition(0)
-                    }
-                }
+                cartAdapter.submitList(cartItems)
 
                 // Обновляем количество товаров в заголовке
                 val itemCount = cartItems.size
@@ -124,15 +117,28 @@ class CartActivity : AppCompatActivity() {
             }
         }
 
-        cartViewModel.totalPrice.observe(this) { totalPrice ->
-            binding.tvTotalPrice.text = "₽${String.format("%.0f", totalPrice)}"
-            binding.tvSubtotal.text = "₽${String.format("%.0f", totalPrice)}"
+        // Подытог (только сумма товаров)
+        cartViewModel.subtotalPrice.observe(this) { subtotal ->
+            binding.tvSubtotal.text = "₽${String.format("%.2f", subtotal)}"
+        }
+
+        // Доставка
+        cartViewModel.deliveryFee.observe(this) { delivery ->
+            if (delivery == 0.0) {
+                binding.tvDelivery.text = "Бесплатно"
+            } else {
+                binding.tvDelivery.text = "₽${String.format("%.2f", delivery)}"
+            }
+        }
+
+        // ИТОГО (сумма товаров + доставка)
+        cartViewModel.totalPrice.observe(this) { total ->
+            binding.tvTotalPrice.text = "₽${String.format("%.2f", total)}"
         }
 
         cartViewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
         }
-
 
         cartViewModel.error.observe(this) { error ->
             error?.let {
@@ -140,6 +146,7 @@ class CartActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun setupClickListeners() {
         binding.btnCheckout.setOnClickListener {

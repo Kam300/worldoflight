@@ -2,18 +2,20 @@ package com.worldoflight.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemFavoriteBinding
+import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 
 class FavoritesAdapter(
     private val onItemClick: (Product) -> Unit,
     private val onRemoveFromFavorites: (Product) -> Unit,
-    private val onAddToCart: (Product) -> Unit = {} // Добавлен параметр
+    private val onAddToCart: (Product) -> Unit = {}
 ) : ListAdapter<Product, FavoritesAdapter.FavoriteViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
@@ -32,6 +34,22 @@ class FavoritesAdapter(
     inner class FavoriteViewHolder(
         private val binding: ItemFavoriteBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        private fun showQuantityDialog(product: Product) {
+            val dialog = QuantityPickerDialog(
+                context = binding.root.context,
+                productName = product.name
+            ) { quantity ->
+                CartManager.addToCart(binding.root.context, product, quantity)
+                onAddToCart(product)
+                Toast.makeText(
+                    binding.root.context,
+                    "Добавлено в корзину: ${product.name} (${quantity} шт.)",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            dialog.show()
+        }
 
         fun bind(product: Product) {
             binding.apply {
@@ -69,15 +87,9 @@ class FavoritesAdapter(
                     onItemClick(product)
                 }
 
-                // Обработчик кнопки добавления в корзину
+                // ТОЛЬКО ОДИН обработчик кнопки добавления в корзину с диалогом
                 btnAddCart.setOnClickListener {
-                    CartManager.addToCart(root.context, product)
-                    onAddToCart(product)
-                    android.widget.Toast.makeText(
-                        root.context,
-                        "Добавлено в корзину: ${product.name}",
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
+                    showQuantityDialog(product)
                 }
 
                 ivFavorite.setOnClickListener {

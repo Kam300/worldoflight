@@ -1,12 +1,14 @@
 package com.worldoflight.ui.activities
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ActivityProductDetailBinding
 import com.worldoflight.ui.adapters.ProductVariantsAdapter
+import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
@@ -114,6 +116,7 @@ class ProductDetailActivity : AppCompatActivity() {
         binding.apply {
             btnAddToCart.setOnClickListener {
                 currentProduct?.let { product ->
+                    showQuantityDialog(product)
                     CartManager.addToCart(this@ProductDetailActivity, product)
                     android.widget.Toast.makeText(
                         this@ProductDetailActivity,
@@ -157,6 +160,20 @@ class ProductDetailActivity : AppCompatActivity() {
         val imageRes: Int,
         val isSelected: Boolean = false
     )
+    private fun showQuantityDialog(product: Product) {
+        val dialog = QuantityPickerDialog(
+            context = this,
+            productName = product.name
+        ) { quantity ->
+            CartManager.addToCart(this, product, quantity)
+            Toast.makeText(
+                this,
+                "Добавлено в корзину: ${product.name} (${quantity} шт.)",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        dialog.show()
+    }
 
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         if (isFavorite) {

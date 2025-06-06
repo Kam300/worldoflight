@@ -2,12 +2,14 @@ package com.worldoflight.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemCategoryProductBinding
+import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
@@ -65,7 +67,7 @@ class CategoryProductsAdapter(
                 }
                 // В методе bind добавить:
                 btnAddCart.setOnClickListener {
-                    CartManager.addToCart(root.context, product)
+                    showQuantityDialog(product)
                     android.widget.Toast.makeText(
                         root.context,
                         "Добавлено в корзину: ${product.name}",
@@ -76,6 +78,9 @@ class CategoryProductsAdapter(
 
                 ivFavorite.setOnClickListener {
                     toggleFavorite(product)
+                }
+                btnAddCart.setOnClickListener {
+                    showQuantityDialog(product)
                 }
             }
         }
@@ -99,6 +104,21 @@ class CategoryProductsAdapter(
                     )
                 )
             }
+        }
+
+        private fun showQuantityDialog(product: Product) {
+            val dialog = QuantityPickerDialog(
+                context = binding.root.context,
+                productName = product.name
+            ) { quantity ->
+                CartManager.addToCart(binding.root.context, product, quantity)
+                Toast.makeText(
+                    binding.root.context,
+                    "Добавлено в корзину: ${product.name} (${quantity} шт.)",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            dialog.show()
         }
 
         private fun toggleFavorite(product: Product) {

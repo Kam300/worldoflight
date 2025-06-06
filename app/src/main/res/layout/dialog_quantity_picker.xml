@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/background_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Заголовок -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Выберите количество"
+            android:textSize="20sp"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            android:fontFamily="@font/raleway"
+            android:gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Название товара -->
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LED лампа E27 10W"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/raleway"
+            android:gravity="center"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Контроль количества -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:background="@drawable/quantity_control_background"
+            android:layout_marginBottom="16dp">
+
+            <!-- Кнопка уменьшения -->
+            <ImageButton
+                android:id="@+id/btn_decrease"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_minus"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                app:tint="@color/light_blue" />
+
+            <!-- Количество -->
+            <TextView
+                android:id="@+id/tv_quantity"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="24sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:fontFamily="@font/raleway"
+                android:gravity="center" />
+
+            <!-- Кнопка увеличения -->
+            <ImageButton
+                android:id="@+id/btn_increase"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_plus"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                app:tint="@color/light_blue" />
+
+        </LinearLayout>
+
+        <!-- Текст количества -->
+        <TextView
+            android:id="@+id/tv_quantity_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1 товар"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/raleway"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Кнопки действий -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Отмена"
+                android:textSize="16sp"
+                android:fontFamily="@font/raleway"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/text_secondary"
+                app:cornerRadius="16dp"
+                android:layout_marginEnd="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add_to_cart"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="В корзину"
+                android:textSize="16sp"
+                android:fontFamily="@font/raleway"
+                app:backgroundTint="@color/light_blue"
+                android:textColor="@color/white"
+                app:cornerRadius="16dp"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

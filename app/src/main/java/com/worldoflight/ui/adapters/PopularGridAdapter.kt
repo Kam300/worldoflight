@@ -2,6 +2,7 @@ package com.worldoflight.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +10,7 @@ import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemPopularGridBinding
 import com.worldoflight.ui.activities.ProductDetailActivity
+import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
@@ -66,15 +68,7 @@ class PopularGridAdapter(
                     }
                     context.startActivity(intent)
                 }
-                // В методе bind добавить:
-                btnAddCart.setOnClickListener {
-                    CartManager.addToCart(root.context, product)
-                    android.widget.Toast.makeText(
-                        root.context,
-                        "Добавлено в корзину: ${product.name}",
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
-                }
+
 
                 // Установка состояния избранного
                 updateFavoriteIcon(product)
@@ -83,20 +77,31 @@ class PopularGridAdapter(
                     onItemClick(product)
                 }
 
-                btnAddCart.setOnClickListener {
-                    android.widget.Toast.makeText(
-                        root.context,
-                        "Добавлено в корзину: ${product.name}",
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
-                }
+
 
                 ivFavorite.setOnClickListener {
                     toggleFavorite(product)
                 }
+                btnAddCart.setOnClickListener {
+                    showQuantityDialog(product)
+                }
             }
         }
 
+        private fun showQuantityDialog(product: Product) {
+            val dialog = QuantityPickerDialog(
+                context = binding.root.context,
+                productName = product.name
+            ) { quantity ->
+                CartManager.addToCart(binding.root.context, product, quantity)
+                android.widget.Toast.makeText(
+                    binding.root.context,
+                    "Добавлено в корзину: ${product.name} (${quantity} шт.)",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
+            dialog.show()
+        }
         private fun updateFavoriteIcon(product: Product) {
             val isFavorite = FavoritesManager.isFavorite(binding.root.context, product.id)
             if (isFavorite) {
