@@ -25,3 +25,4 @@ enum class ProductCategory(val displayName: String) {
     WALL_LAMPS("Бра"),
     LED_STRIPS("LED ленты")
 }
+
