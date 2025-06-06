@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemCategoryProductBinding
+import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
 class CategoryProductsAdapter(
@@ -62,6 +63,16 @@ class CategoryProductsAdapter(
                         android.widget.Toast.LENGTH_SHORT
                     ).show()
                 }
+                // В методе bind добавить:
+                btnAddCart.setOnClickListener {
+                    CartManager.addToCart(root.context, product)
+                    android.widget.Toast.makeText(
+                        root.context,
+                        "Добавлено в корзину: ${product.name}",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+
 
                 ivFavorite.setOnClickListener {
                     toggleFavorite(product)

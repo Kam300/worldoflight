@@ -3,20 +3,24 @@ package com.worldoflight.ui.activities
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.worldoflight.R
 import com.worldoflight.databinding.ActivityMainBinding
-import com.worldoflight.ui.fragments.FavoritesFragment
-import com.worldoflight.ui.fragments.NotificationsFragment
 import com.worldoflight.ui.fragments.ProductListFragment
-import com.worldoflight.ui.fragments.ProfileFragment
+import com.worldoflight.ui.fragments.FavoritesFragment
 import com.worldoflight.ui.fragments.CartFragment
+import com.worldoflight.ui.fragments.NotificationsFragment
+import com.worldoflight.ui.fragments.ProfileFragment
+import com.worldoflight.ui.viewmodels.CartViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var cartViewModel: CartViewModel
     private var currentSelectedNav = R.id.nav_home_container
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,8 +28,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
+
         setupToolbar()
         setupBottomNavigation()
+        observeCartChanges()
 
         if (savedInstanceState == null) {
             replaceFragment(ProductListFragment())
@@ -52,7 +59,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_cart -> {
-                // TODO: Открыть корзину
+                selectNavItem(R.id.fab_cart)
+                supportActionBar?.title = "Корзина"
+                replaceFragment(CartFragment())
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -75,12 +84,13 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // Корзина (центральная кнопка)
+// Корзина (центральная кнопка)
         binding.fabCart.setOnClickListener {
-            selectNavItem(R.id.fab_cart)
-            supportActionBar?.title = "Корзина"
-            replaceFragment(CartFragment())
+            val intent = android.content.Intent(this, CartActivity::class.java)
+            startActivity(intent)
         }
+
+
         // Уведомления
         binding.navNotificationsContainer.setOnClickListener {
             selectNavItem(R.id.nav_notifications_container)
@@ -93,6 +103,22 @@ class MainActivity : AppCompatActivity() {
             selectNavItem(R.id.nav_profile_container)
             supportActionBar?.title = "Профиль"
             replaceFragment(ProfileFragment())
+        }
+    }
+
+    private fun observeCartChanges() {
+        cartViewModel.itemsCount.observe(this) { count ->
+            updateCartBadge(count ?: 0)
+        }
+        cartViewModel.loadCartItems(this)
+    }
+
+    private fun updateCartBadge(count: Int) {
+        if (count > 0) {
+            binding.cartBadge.visibility = View.VISIBLE
+            binding.cartBadge.text = if (count > 99) "99+" else count.toString()
+        } else {
+            binding.cartBadge.visibility = View.GONE
         }
     }
 
@@ -114,6 +140,9 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_profile_container -> {
                 binding.ivNavProfile.setColorFilter(ContextCompat.getColor(this, R.color.nav_icon_selected))
             }
+            R.id.fab_cart -> {
+                // FAB остается с фиксированным цветом
+            }
         }
 
         currentSelectedNav = selectedId
@@ -131,5 +160,10 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        cartViewModel.loadCartItems(this) // Обновляем счетчик при возвращении
     }
 }

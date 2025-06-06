@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemFavoriteBinding
+import com.worldoflight.utils.CartManager
 
 class FavoritesAdapter(
     private val onItemClick: (Product) -> Unit,
-    private val onRemoveFromFavorites: (Product) -> Unit
+    private val onRemoveFromFavorites: (Product) -> Unit,
+    private val onAddToCart: (Product) -> Unit = {} // Добавлен параметр
 ) : ListAdapter<Product, FavoritesAdapter.FavoriteViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
@@ -56,12 +58,21 @@ class FavoritesAdapter(
 
                 // Иконка избранного всегда заполненная (красная)
                 ivFavorite.setImageResource(R.drawable.ic_favorite_filled)
+                ivFavorite.setColorFilter(
+                    androidx.core.content.ContextCompat.getColor(
+                        root.context,
+                        R.color.accent_orange
+                    )
+                )
 
                 root.setOnClickListener {
                     onItemClick(product)
                 }
 
+                // Обработчик кнопки добавления в корзину
                 btnAddCart.setOnClickListener {
+                    CartManager.addToCart(root.context, product)
+                    onAddToCart(product)
                     android.widget.Toast.makeText(
                         root.context,
                         "Добавлено в корзину: ${product.name}",

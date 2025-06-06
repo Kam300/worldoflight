@@ -1,10 +1,12 @@
 package com.worldoflight.ui.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.worldoflight.data.models.CartItem
+import com.worldoflight.utils.CartManager
 import kotlinx.coroutines.launch
 
 class CartViewModel : ViewModel() {
@@ -15,23 +17,22 @@ class CartViewModel : ViewModel() {
     private val _totalPrice = MutableLiveData<Double>()
     val totalPrice: LiveData<Double> = _totalPrice
 
+    private val _itemsCount = MutableLiveData<Int>()
+    val itemsCount: LiveData<Int> = _itemsCount
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun loadCartItems() {
+    fun loadCartItems(context: Context) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // TODO: Загрузка корзины из БД
-                // val items = cartRepository.getCartItems()
-                // _cartItems.value = items
-
-                // Временные данные
-                _cartItems.value = emptyList()
-                calculateTotal()
+                val items = CartManager.getCartItems(context)
+                _cartItems.value = items
+                calculateTotals(context)
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
@@ -40,47 +41,41 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun updateQuantity(cartItemId: Long, newQuantity: Int) {
+    fun updateQuantity(context: Context, cartItemId: Long, newQuantity: Int) {
         viewModelScope.launch {
             try {
-                // TODO: Обновление количества в БД
-                // cartRepository.updateQuantity(cartItemId, newQuantity)
-
-                val currentItems = _cartItems.value?.toMutableList() ?: return@launch
-                val updatedItems = currentItems.map { item ->
-                    if (item.id == cartItemId) {
-                        item.copy(quantity = newQuantity)
-                    } else {
-                        item
-                    }
-                }
-                _cartItems.value = updatedItems
-                calculateTotal()
+                CartManager.updateQuantity(context, cartItemId, newQuantity)
+                loadCartItems(context)
             } catch (e: Exception) {
                 _error.value = e.message
             }
         }
     }
 
-    fun removeFromCart(cartItemId: Long) {
+    fun removeFromCart(context: Context, cartItemId: Long) {
         viewModelScope.launch {
             try {
-                // TODO: Удаление из корзины в БД
-                // cartRepository.removeFromCart(cartItemId)
-
-                val currentItems = _cartItems.value?.toMutableList() ?: return@launch
-                currentItems.removeAll { it.id == cartItemId }
-                _cartItems.value = currentItems
-                calculateTotal()
+                CartManager.removeFromCart(context, cartItemId)
+                loadCartItems(context)
             } catch (e: Exception) {
                 _error.value = e.message
             }
         }
     }
 
-    private fun calculateTotal() {
-        val items = _cartItems.value ?: emptyList()
-        val total = items.sumOf { it.price * it.quantity }
-        _totalPrice.value = total
+    fun clearCart(context: Context) {
+        viewModelScope.launch {
+            try {
+                CartManager.clearCart(context)
+                loadCartItems(context)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
+
+    private fun calculateTotals(context: Context) {
+        _totalPrice.value = CartManager.getTotalPrice(context)
+        _itemsCount.value = CartManager.getCartItemsCount(context)
     }
 }

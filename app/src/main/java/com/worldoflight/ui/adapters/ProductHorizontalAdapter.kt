@@ -9,6 +9,7 @@ import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemProductHorizontalBinding
 import com.worldoflight.ui.activities.ProductDetailActivity
+import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
 class ProductHorizontalAdapter(
@@ -86,6 +87,17 @@ class ProductHorizontalAdapter(
                     }
                     context.startActivity(intent)
                 }
+                // В методе bind добавить:
+                btnAddCart.setOnClickListener {
+                    CartManager.addToCart(root.context, product)
+                    android.widget.Toast.makeText(
+                        root.context,
+                        "Добавлено в корзину: ${product.name}",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                    onAddToCart(product)
+                }
+
             }
         }
 

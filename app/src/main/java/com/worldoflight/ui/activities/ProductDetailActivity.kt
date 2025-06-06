@@ -7,6 +7,7 @@ import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ActivityProductDetailBinding
 import com.worldoflight.ui.adapters.ProductVariantsAdapter
+import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
 class ProductDetailActivity : AppCompatActivity() {
@@ -113,6 +114,7 @@ class ProductDetailActivity : AppCompatActivity() {
         binding.apply {
             btnAddToCart.setOnClickListener {
                 currentProduct?.let { product ->
+                    CartManager.addToCart(this@ProductDetailActivity, product)
                     android.widget.Toast.makeText(
                         this@ProductDetailActivity,
                         "Добавлено в корзину: ${product.name}",

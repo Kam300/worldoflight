@@ -36,6 +36,10 @@
             android:name=".ui.activities.CategoryProductsActivity"
             android:exported="false"
             android:parentActivityName=".ui.activities.MainActivity" />
+        <activity
+            android:name=".ui.activities.CartActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.MainActivity" />
 
 
     </application>

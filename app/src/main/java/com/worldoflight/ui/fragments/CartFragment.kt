@@ -42,10 +42,10 @@ class CartFragment : Fragment() {
     private fun setupRecyclerView() {
         cartAdapter = CartAdapter(
             onQuantityChanged = { cartItem, newQuantity ->
-                cartViewModel.updateQuantity(cartItem.id, newQuantity)
+                cartViewModel.updateQuantity(requireContext(), cartItem.id, newQuantity)
             },
             onRemoveItem = { cartItem ->
-                cartViewModel.removeFromCart(cartItem.id)
+                cartViewModel.removeFromCart(requireContext(), cartItem.id)
             }
         )
 
@@ -71,10 +71,17 @@ class CartFragment : Fragment() {
 
         cartViewModel.totalPrice.observe(viewLifecycleOwner) { totalPrice ->
             binding.tvTotalPrice.text = "₽${String.format("%.2f", totalPrice)}"
+            binding.tvSubtotal.text = "₽${String.format("%.2f", totalPrice)}"
         }
 
         cartViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        cartViewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                android.widget.Toast.makeText(requireContext(), it, android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -83,19 +90,36 @@ class CartFragment : Fragment() {
             // TODO: Переход к оформлению заказа
             android.widget.Toast.makeText(
                 requireContext(),
-                "Переход к оформлению заказа",
+                "Переход к оформлению заказа на сумму ${binding.tvTotalPrice.text}",
                 android.widget.Toast.LENGTH_SHORT
             ).show()
         }
 
         binding.btnContinueShopping.setOnClickListener {
             // Возврат к главному экрану
-            requireActivity().supportFragmentManager.popBackStack()
+            requireActivity().onBackPressed()
+        }
+
+        binding.btnApplyPromo.setOnClickListener {
+            val promoCode = binding.etPromoCode.text.toString()
+            if (promoCode.isNotEmpty()) {
+                // TODO: Применить промокод
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "Промокод $promoCode применен",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
     private fun loadCartItems() {
-        cartViewModel.loadCartItems()
+        cartViewModel.loadCartItems(requireContext())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadCartItems() // Обновляем при возвращении на экран
     }
 
     override fun onDestroyView() {
