@@ -8,11 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.worldoflight.data.models.CartItem
 import com.worldoflight.utils.CartManager
 import kotlinx.coroutines.launch
-
 class CartViewModel : ViewModel() {
 
     private val _cartItems = MutableLiveData<List<CartItem>>()
     val cartItems: LiveData<List<CartItem>> = _cartItems
+
+    private val _subtotalPrice = MutableLiveData<Double>()
+    val subtotalPrice: LiveData<Double> = _subtotalPrice
+
+    private val _deliveryFee = MutableLiveData<Double>()
+    val deliveryFee: LiveData<Double> = _deliveryFee
 
     private val _totalPrice = MutableLiveData<Double>()
     val totalPrice: LiveData<Double> = _totalPrice
@@ -32,7 +37,7 @@ class CartViewModel : ViewModel() {
             try {
                 val items = CartManager.getCartItems(context)
                 _cartItems.value = items
-                calculateTotals(context)
+                calculateTotals(items)
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
@@ -63,19 +68,21 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun clearCart(context: Context) {
-        viewModelScope.launch {
-            try {
-                CartManager.clearCart(context)
-                loadCartItems(context)
-            } catch (e: Exception) {
-                _error.value = e.message
-            }
-        }
-    }
+    private fun calculateTotals(items: List<CartItem>) {
+        // Подсчет суммы товаров
+        val subtotal = items.sumOf { it.price * it.quantity }
+        _subtotalPrice.value = subtotal
 
-    private fun calculateTotals(context: Context) {
-        _totalPrice.value = CartManager.getTotalPrice(context)
-        _itemsCount.value = CartManager.getCartItemsCount(context)
+        // Расчет доставки (бесплатная доставка от 1000 рублей)
+        val delivery = if (subtotal >= 1000.0) 0.0 else 60.20
+        _deliveryFee.value = delivery
+
+        // Итого = сумма + доставка
+        val total = subtotal + delivery
+        _totalPrice.value = total
+
+        // Количество товаров
+        _itemsCount.value = items.sumOf { it.quantity }
     }
 }
+

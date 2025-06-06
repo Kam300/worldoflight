@@ -1,13 +1,17 @@
 package com.worldoflight.ui.activities
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.worldoflight.databinding.ActivityCartBinding
 import com.worldoflight.ui.adapters.CartItemAdapter
-import com.worldoflight.ui.utils.SwipeToActionCallback
+import com.worldoflight.ui.utils.DeleteSwipeCallback
+
+
+
 import com.worldoflight.ui.viewmodels.CartViewModel
 
 class CartActivity : AppCompatActivity() {
@@ -57,64 +61,39 @@ class CartActivity : AppCompatActivity() {
         binding.rvCartItems.apply {
             layoutManager = LinearLayoutManager(this@CartActivity)
             adapter = cartAdapter
+
+            // Убираем анимации для избежания пустых мест
+            itemAnimator = null
+
+            // Устанавливаем фиксированный размер для оптимизации
+            setHasFixedSize(true)
         }
     }
 
     private fun setupSwipeGestures() {
-        val swipeCallback = object : SwipeToActionCallback(this) {
-            override fun onLeftSwipe(position: Int) {
-                // Удаление товара при свайпе влево
+        val deleteSwipeCallback = DeleteSwipeCallback(
+            context = this,
+            onDelete = { position ->
                 val cartItem = cartAdapter.currentList[position]
-                cartViewModel.removeFromCart(this@CartActivity, cartItem.id)
+                cartViewModel.removeFromCart(this, cartItem.id)
 
-                android.widget.Toast.makeText(
-                    this@CartActivity,
+                Toast.makeText(
+                    this,
                     "Товар удален из корзины",
-                    android.widget.Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT
                 ).show()
             }
+        )
 
-            override fun onRightSwipeAction(position: Int, action: SwipeAction) {
-                val cartItem = cartAdapter.currentList[position]
-
-                when (action) {
-                    SwipeAction.DECREASE -> {
-                        val newQuantity = cartItem.quantity - 1
-                        if (newQuantity > 0) {
-                            cartViewModel.updateQuantity(this@CartActivity, cartItem.id, newQuantity)
-                            android.widget.Toast.makeText(
-                                this@CartActivity,
-                                "Количество уменьшено",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            cartViewModel.removeFromCart(this@CartActivity, cartItem.id)
-                            android.widget.Toast.makeText(
-                                this@CartActivity,
-                                "Товар удален",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                    SwipeAction.INCREASE -> {
-                        val newQuantity = cartItem.quantity + 1
-                        cartViewModel.updateQuantity(this@CartActivity, cartItem.id, newQuantity)
-                        android.widget.Toast.makeText(
-                            this@CartActivity,
-                            "Количество увеличено",
-                            android.widget.Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                // Возвращаем элемент в исходное положение
-                cartAdapter.notifyItemChanged(position)
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(swipeCallback)
+        val itemTouchHelper = ItemTouchHelper(deleteSwipeCallback)
         itemTouchHelper.attachToRecyclerView(binding.rvCartItems)
     }
+
+
+
+
+
+
 
     private fun observeViewModel() {
         cartViewModel.cartItems.observe(this) { cartItems ->
@@ -126,7 +105,14 @@ class CartActivity : AppCompatActivity() {
                 binding.rvCartItems.visibility = android.view.View.VISIBLE
                 binding.checkoutLayout.visibility = android.view.View.VISIBLE
                 binding.emptyStateLayout.visibility = android.view.View.GONE
-                cartAdapter.submitList(cartItems)
+
+                // Обновляем список без анимации для избежания пустых мест
+                cartAdapter.submitList(cartItems) {
+                    // Прокручиваем к началу если список изменился
+                    if (cartItems.isNotEmpty()) {
+                        binding.rvCartItems.scrollToPosition(0)
+                    }
+                }
 
                 // Обновляем количество товаров в заголовке
                 val itemCount = cartItems.size
@@ -146,6 +132,7 @@ class CartActivity : AppCompatActivity() {
         cartViewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
         }
+
 
         cartViewModel.error.observe(this) { error ->
             error?.let {
