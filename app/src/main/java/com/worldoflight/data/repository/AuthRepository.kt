@@ -100,7 +100,8 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-    // Сброс пароля
+
+    // Сброс пароля с OTP
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             supabase.auth.resetPasswordForEmail(email)
@@ -109,6 +110,57 @@ class AuthRepository(private val context: Context) {
             Result.failure(e)
         }
     }
+
+    // Подтверждение OTP для сброса пароля
+    suspend fun verifyPasswordResetOtp(email: String, token: String): Result<Boolean> {
+        return try {
+            supabase.auth.verifyEmailOtp(
+                type = OtpType.Email.RECOVERY,
+                email = email,
+                token = token
+            )
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Установка нового пароля
+    suspend fun updatePassword(newPassword: String): Result<Boolean> {
+        return try {
+            supabase.auth.updateUser {
+                password = newPassword
+            }
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Исправленный метод повторной отправки для сброса пароля
+    suspend fun resendPasswordResetOtp(email: String): Result<Boolean> {
+        return try {
+            // Повторно отправляем запрос на сброс пароля
+            supabase.auth.resetPasswordForEmail(email)
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    // Альтернативный метод с использованием OTP API
+    suspend fun resendPasswordResetOtpAlternative(email: String): Result<Boolean> {
+        return try {
+            supabase.auth.resendEmail(
+                type = OtpType.Email.RECOVERY,
+                email = email
+            )
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 
     // Выход пользователя
     suspend fun signOut(): Result<Unit> {
@@ -125,6 +177,7 @@ class AuthRepository(private val context: Context) {
     fun isUserLoggedIn(): Boolean {
         return encryptedPrefs.getBoolean("is_logged_in", false)
     }
+
 
     // Сохранение сессии пользователя
     private fun saveUserSession(userId: String, email: String) {

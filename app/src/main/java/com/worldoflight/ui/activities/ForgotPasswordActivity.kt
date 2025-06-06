@@ -1,5 +1,6 @@
 package com.worldoflight.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
         authViewModel.authState.observe(this) { state ->
             when (state) {
                 is AuthState.PasswordResetSent -> {
-                    showEmailSentDialog(state.email)
+                    // Переход на экран ввода OTP кода
+                    startActivity(Intent(this, PasswordResetVerificationActivity::class.java).apply {
+                        putExtra("email", state.email)
+                    })
                 }
                 else -> {
                     // Обрабатываем другие состояния

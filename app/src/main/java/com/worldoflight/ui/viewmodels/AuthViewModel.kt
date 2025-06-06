@@ -110,6 +110,49 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updatePassword(newPassword: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            authRepository.updatePassword(newPassword)
+                .onSuccess {
+                    _authState.value = AuthState.PasswordUpdated
+                }
+                .onFailure { error ->
+                    _errorMessage.value = error.message ?: "Ошибка обновления пароля"
+                }
+
+            _isLoading.value = false
+        }
+    }
+
+    fun resendPasswordResetOtp(email: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            // Сначала пробуем основной метод
+            authRepository.resendPasswordResetOtp(email)
+                .onSuccess {
+                    _errorMessage.value = "Код восстановления отправлен повторно на $email"
+                }
+                .onFailure { error ->
+                    // Если не работает, пробуем альтернативный метод
+                    authRepository.resetPassword(email)
+                        .onSuccess {
+                            _errorMessage.value = "Код восстановления отправлен повторно на $email"
+                        }
+                        .onFailure { altError ->
+                            _errorMessage.value = altError.message ?: "Ошибка отправки кода"
+                        }
+                }
+
+            _isLoading.value = false
+        }
+    }
+
+
     fun signOut() {
         viewModelScope.launch {
             authRepository.signOut()
@@ -118,6 +161,24 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 }
         }
     }
+    // ДОБАВИТЬ ЭТОТ МЕТОД
+    fun verifyPasswordResetOtp(email: String, token: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            authRepository.verifyPasswordResetOtp(email, token)
+                .onSuccess {
+                    _authState.value = AuthState.PasswordResetVerified(email)
+                }
+                .onFailure { error ->
+                    _errorMessage.value = error.message ?: "Неверный код"
+                }
+
+            _isLoading.value = false
+        }
+    }
+
 
     private fun checkAuthState() {
         viewModelScope.launch {
@@ -139,4 +200,6 @@ sealed class AuthState {
     object Authenticated : AuthState()
     data class AwaitingVerification(val email: String) : AuthState()
     data class PasswordResetSent(val email: String) : AuthState()
+    data class PasswordResetVerified(val email: String) : AuthState()
+    object PasswordUpdated : AuthState()
 }
