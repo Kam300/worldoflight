@@ -1,0 +1,69 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Верхний левый квадрат -->
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M10,10h30v30h-30z"/>
+    <path android:fillColor="@color/background_primary"
+        android:pathData="M15,15h20v20h-20z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M20,20h10v10h-10z"/>
+
+    <!-- Верхний правый квадрат -->
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M80,10h30v30h-30z"/>
+    <path android:fillColor="@color/background_primary"
+        android:pathData="M85,15h20v20h-20z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M90,20h10v10h-10z"/>
+
+    <!-- Нижний левый квадрат -->
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M10,80h30v30h-30z"/>
+    <path android:fillColor="@color/background_primary"
+        android:pathData="M15,85h20v20h-20z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M20,90h10v10h-10z"/>
+
+    <!-- Случайные точки для имитации QR кода -->
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M50,15h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M60,15h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M50,25h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M65,25h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M45,35h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M55,35h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M65,35h5v5h-5z"/>
+
+    <!-- Средняя часть -->
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M45,50h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M55,50h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M65,50h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M75,50h5v5h-5z"/>
+
+    <!-- Нижняя часть -->
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M50,80h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M60,80h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M70,80h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M80,80h5v5h-5z"/>
+    <path android:fillColor="@color/text_primary"
+        android:pathData="M90,80h5v5h-5z"/>
+
+</vector>

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.databinding.ItemCategoryBinding
+import com.worldoflight.ui.activities.CategoryProductsActivity
 import com.worldoflight.ui.fragments.CategoryItem
 
 class CategoryAdapter(
@@ -48,10 +49,28 @@ class CategoryAdapter(
                 ivCategoryIcon.setImageResource(iconRes)
 
                 root.setOnClickListener {
-                    onItemClick(category)
+                    val context = root.context
+                    val intent = android.content.Intent(context, CategoryProductsActivity::class.java).apply {
+                        putExtra(CategoryProductsActivity.EXTRA_CATEGORY_NAME, category.name)
+                        putExtra(CategoryProductsActivity.EXTRA_CATEGORY_KEY, getCategoryKey(category.name))
+                    }
+                    context.startActivity(intent)
                 }
             }
         }
+
+        private fun getCategoryKey(categoryName: String): String {
+            return when (categoryName) {
+                "Все" -> "all"
+                "Лампочки" -> "bulbs"
+                "Люстры" -> "chandeliers"
+                "Торшеры" -> "floor_lamps"
+                "Бра" -> "wall_lamps"
+                "LED" -> "led_strips"
+                else -> "all"
+            }
+        }
+
     }
 
     private class CategoryDiffCallback : DiffUtil.ItemCallback<CategoryItem>() {

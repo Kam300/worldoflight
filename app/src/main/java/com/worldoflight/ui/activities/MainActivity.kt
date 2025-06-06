@@ -9,7 +9,10 @@ import androidx.fragment.app.Fragment
 import com.worldoflight.R
 import com.worldoflight.databinding.ActivityMainBinding
 import com.worldoflight.ui.fragments.FavoritesFragment
+import com.worldoflight.ui.fragments.NotificationsFragment
 import com.worldoflight.ui.fragments.ProductListFragment
+import com.worldoflight.ui.fragments.ProfileFragment
+import com.worldoflight.ui.fragments.CartFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,7 +68,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Избранное
-        // Избранное
         binding.navFavoritesContainer.setOnClickListener {
             selectNavItem(R.id.nav_favorites_container)
             supportActionBar?.title = "Избранное"
@@ -77,21 +79,20 @@ class MainActivity : AppCompatActivity() {
         binding.fabCart.setOnClickListener {
             selectNavItem(R.id.fab_cart)
             supportActionBar?.title = "Корзина"
-            // TODO: Добавить фрагмент корзины
+            replaceFragment(CartFragment())
         }
-
         // Уведомления
         binding.navNotificationsContainer.setOnClickListener {
             selectNavItem(R.id.nav_notifications_container)
             supportActionBar?.title = "Уведомления"
-            // TODO: Добавить фрагмент уведомлений
+            replaceFragment(NotificationsFragment())
         }
 
         // Профиль
         binding.navProfileContainer.setOnClickListener {
             selectNavItem(R.id.nav_profile_container)
             supportActionBar?.title = "Профиль"
-            // TODO: Добавить фрагмент профиля
+            replaceFragment(ProfileFragment())
         }
     }
 

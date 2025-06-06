@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.FragmentProductListBinding
+import com.worldoflight.ui.activities.CategoryProductsActivity
 import com.worldoflight.ui.activities.PopularActivity
 import com.worldoflight.ui.adapters.CategoryAdapter
 import com.worldoflight.ui.adapters.ProductHorizontalAdapter
@@ -45,12 +46,11 @@ class ProductListFragment : Fragment() {
 
     private fun setupCategoriesRecyclerView() {
         categoryAdapter = CategoryAdapter { category ->
-            // Обработка клика по категории
-            android.widget.Toast.makeText(
-                requireContext(),
-                "Выбрана категория: ${category.name}",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
+            val intent = android.content.Intent(requireContext(), CategoryProductsActivity::class.java).apply {
+                putExtra(CategoryProductsActivity.EXTRA_CATEGORY_NAME, category.name)
+                putExtra(CategoryProductsActivity.EXTRA_CATEGORY_KEY, getCategoryKey(category.name))
+            }
+            startActivity(intent)
         }
 
         binding.rvCategories.apply {
@@ -58,6 +58,19 @@ class ProductListFragment : Fragment() {
             adapter = categoryAdapter
         }
     }
+
+    private fun getCategoryKey(categoryName: String): String {
+        return when (categoryName) {
+            "Все" -> "all"
+            "Лампочки" -> "bulbs"
+            "Люстры" -> "chandeliers"
+            "Торшеры" -> "floor_lamps"
+            "Бра" -> "wall_lamps"
+            "LED" -> "led_strips"
+            else -> "all"
+        }
+    }
+
 
     private fun setupClickListeners() {
         // Найдите TextView "Все" в макете и добавьте клик
