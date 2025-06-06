@@ -49,6 +49,7 @@ class ProductAdapter(
                 btnAddToCart.setOnClickListener {
                     // TODO: Добавить в корзину
                 }
+
             }
         }
     }

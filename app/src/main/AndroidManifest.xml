@@ -62,6 +62,17 @@
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.MainActivity" />
 
+        <!-- ДОБАВИТЬ ЭТУ АКТИВНОСТЬ -->
+        <activity
+            android:name=".ui.activities.CategoryProductsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+        <activity android:name=".ui.activities.PopularActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
     </application>
 
 </manifest>

@@ -79,11 +79,23 @@ class PopularGridAdapter(
 
 
 
+
                 ivFavorite.setOnClickListener {
                     toggleFavorite(product)
                 }
                 btnAddCart.setOnClickListener {
                     showQuantityDialog(product)
+                }
+                root.setOnClickListener {
+                    val context = root.context
+                    val intent = android.content.Intent(context, ProductDetailActivity::class.java).apply {
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.id)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_NAME, product.name)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_PRICE, product.price)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
+                    }
+                    context.startActivity(intent)
                 }
             }
         }

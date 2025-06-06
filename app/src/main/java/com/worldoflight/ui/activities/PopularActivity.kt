@@ -46,6 +46,7 @@ class PopularActivity : AppCompatActivity() {
             ).show()
         }
 
+
         binding.rvPopularProducts.apply {
             layoutManager = GridLayoutManager(this@PopularActivity, 2)
             adapter = popularAdapter
