@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_secondary"
+    tools:context=".ui.activities.PopularActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_gold"
+        android:minHeight="?attr/actionBarSize"
+        app:title="Популярное"
+        app:titleCentered="true"
+        app:titleTextColor="@color/white"
+        app:titleTextAppearance="@style/TextAppearance.WorldOfLight.Headline2"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:menu="@menu/popular_menu"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_popular_products"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="@dimen/spacing_md"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_popular_grid" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

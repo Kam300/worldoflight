@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Основной фон -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background_primary" />
+            <corners
+                android:topLeftRadius="20dp"
+                android:topRightRadius="20dp" />
+        </shape>
+    </item>
+
+    <!-- Вырез для FAB -->
+    <item android:top="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</layer-list>

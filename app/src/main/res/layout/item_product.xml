@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_sm"
+    style="@style/Card.WorldOfLight">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_md">
+
+        <ImageView
+            android:id="@+id/iv_product_image"
+            android:layout_width="@dimen/image_size_medium"
+            android:layout_height="@dimen/image_size_medium"
+            android:scaleType="centerCrop"
+            android:background="@color/secondary_light_gray"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:src="@drawable/ic_lightbulb" />
+
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:textAppearance="@style/TextAppearance.WorldOfLight.Headline2"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="@id/iv_product_image"
+            app:layout_constraintStart_toEndOf="@id/iv_product_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="LED лампа E27 10W" />
+
+        <TextView
+            android:id="@+id/tv_product_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
+            android:maxLines="3"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/tv_product_name"
+            app:layout_constraintStart_toEndOf="@id/iv_product_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Энергосберегающая LED лампа с теплым светом" />
+
+        <TextView
+            android:id="@+id/tv_product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:textAppearance="@style/TextAppearance.WorldOfLight.Headline2"
+            android:textColor="@color/primary_gold"
+            app:layout_constraintTop_toBottomOf="@id/iv_product_image"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="599 ₽" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_to_cart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_cart"
+            style="@style/Button.WorldOfLight.Primary"
+            app:layout_constraintTop_toBottomOf="@id/iv_product_image"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

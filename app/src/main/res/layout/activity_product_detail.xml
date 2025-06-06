@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_secondary"
+    tools:context=".ui.activities.ProductDetailActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_gold"
+        android:minHeight="?attr/actionBarSize"
+        app:title="World of Light"
+        app:titleCentered="true"
+        app:titleTextColor="@color/white"
+        app:titleTextAppearance="@style/TextAppearance.WorldOfLight.Headline2"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:menu="@menu/product_detail_menu" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginBottom="80dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Основное изображение товара -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/background_primary">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/iv_main_product"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:scaleType="centerInside"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:src="@drawable/ic_lightbulb" />
+
+                    <ImageView
+                        android:id="@+id/iv_favorite"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_favorite_border"
+                        android:background="@drawable/favorite_background"
+                        android:padding="8dp"
+                        android:layout_margin="@dimen/spacing_md"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:tint="@color/text_secondary"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Информация о товаре -->
+            <TextView
+                android:id="@+id/tv_product_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LED лампа E27 10W"
+                android:textAppearance="@style/TextAppearance.WorldOfLight.Headline1"
+                android:layout_marginBottom="@dimen/spacing_sm" />
+
+            <TextView
+                android:id="@+id/tv_product_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Лампочки"
+                android:textAppearance="@style/TextAppearance.WorldOfLight.Caption"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:id="@+id/tv_product_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="₽752.00"
+                android:textSize="28sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:layout_marginBottom="@dimen/spacing_lg" />
+
+            <!-- Варианты товара -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_product_variants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:orientation="horizontal"
+                tools:listitem="@layout/item_product_variant" />
+
+            <!-- Описание товара -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Вставка Max Air 270 Обеспечивает Непревзойденный Комфорт В Течение Всего Дня. Изящный Дизайн ......."
+                android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
+                android:layout_marginBottom="@dimen/spacing_sm" />
+
+            <TextView
+                android:id="@+id/tv_product_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Энергосберегающая LED лампа с теплым светом"
+                android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
+                android:layout_marginBottom="@dimen/spacing_sm" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Подробнее"
+                android:textColor="@color/light_blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Нижняя панель с кнопками -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@color/background_primary"
+        android:elevation="8dp"
+        android:padding="@dimen/spacing_md"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_favorite_border"
+            android:background="@drawable/favorite_button_background"
+            android:padding="12dp"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="@color/text_primary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_to_cart"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="В Корзину"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            style="@style/Button.WorldOfLight.Primary"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_shopping_bag"
+            app:iconGravity="textStart" />
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

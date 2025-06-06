@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Application Theme -->
+    <style name="Theme.WorldOfLight" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary_gold</item>
+        <item name="colorOnPrimary">@color/text_on_primary</item>
+        <item name="colorSecondary">@color/secondary_amber</item>
+        <item name="colorOnSecondary">@color/text_on_primary</item>
+        <item name="android:colorBackground">@color/background_primary</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorSurface">@color/background_secondary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:fontFamily">@font/raleway</item>
+    </style>
+
+    <!-- Text Styles - исправленные -->
+    <style name="TextAppearance.WorldOfLight.Headline1" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">@dimen/text_size_h1</item>
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.WorldOfLight.Headline2" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">@dimen/text_size_h2</item>
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.WorldOfLight.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.WorldOfLight.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">@dimen/text_size_caption</item>
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Button Styles -->
+    <style name="Button.WorldOfLight.Primary" parent="Widget.Material3.Button">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textStyle">bold</item>
+        <item name="backgroundTint">@color/primary_gold</item>
+        <item name="android:textColor">@color/text_on_primary</item>
+    </style>
+
+    <!-- Card Styles -->
+    <style name="Card.WorldOfLight" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardBackgroundColor">@color/background_primary</item>
+    </style>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">World of Light</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_catalog">Каталог</string>
+    <string name="nav_cart">Корзина</string>
+    <string name="nav_profile">Профиль</string>
+
+    <!-- Product Categories -->
+    <string name="category_bulbs">Лампочки</string>
+    <string name="category_chandeliers">Люстры</string>
+    <string name="category_floor_lamps">Торшеры</string>
+    <string name="category_table_lamps">Настольные лампы</string>
+    <string name="category_wall_lamps">Бра</string>
+    <string name="category_led_strips">LED ленты</string>
+
+    <!-- Common -->
+    <string name="loading">Загрузка...</string>
+    <string name="error_loading">Ошибка загрузки</string>
+    <string name="retry">Повторить</string>
+    <string name="price_format">%s ₽</string>
+    <string name="add_to_cart">В корзину</string>
+    <string name="buy_now">Купить сейчас</string>
+
+    <!-- Product Details -->
+    <string name="product_description">Описание</string>
+    <string name="product_specifications">Характеристики</string>
+    <string name="product_reviews">Отзывы</string>
+    <string name="in_stock">В наличии</string>
+    <string name="out_of_stock">Нет в наличии</string>
+</resources>
