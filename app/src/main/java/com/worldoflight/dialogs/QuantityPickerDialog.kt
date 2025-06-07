@@ -4,20 +4,22 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.Window
 import android.widget.Toast
 import com.worldoflight.databinding.DialogQuantityPickerBinding
+import com.worldoflight.utils.CartManager
 
 class QuantityPickerDialog(
     context: Context,
     private val productName: String,
-    private val stockQuantity: Int, // Добавляем параметр остатков
+    private val productId: Long,
+    private val stockQuantity: Int,
     private val onQuantitySelected: (Int) -> Unit
 ) : Dialog(context) {
 
     private lateinit var binding: DialogQuantityPickerBinding
     private var selectedQuantity = 1
+    private var currentQuantityInCart = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +28,14 @@ class QuantityPickerDialog(
         binding = DialogQuantityPickerBinding.inflate(LayoutInflater.from(context))
         setContentView(binding.root)
 
+        getCurrentCartQuantity()
         setupDialog()
         setupClickListeners()
+    }
+
+    private fun getCurrentCartQuantity() {
+        val cartItems = CartManager.getCartItems(context)
+        currentQuantityInCart = cartItems.find { it.product?.id == productId }?.quantity ?: 0
     }
 
     private fun setupDialog() {
@@ -36,21 +44,18 @@ class QuantityPickerDialog(
             tvQuantity.text = selectedQuantity.toString()
             updateTotalText()
 
-            // Показываем информацию об остатках
+            // Показываем информацию об остатках и количестве в корзине
             if (stockQuantity <= 0) {
-                // Товара нет в наличии
                 btnAddToCart.isEnabled = false
                 btnAddToCart.text = "Нет в наличии"
                 btnIncrease.isEnabled = false
                 btnDecrease.isEnabled = false
                 tvQuantityText.text = "Товар закончился"
-            } else if (stockQuantity < 5) {
-                // Мало товара
-                tvQuantityText.text = "Осталось только $stockQuantity шт."
+            } else {
+                updateAvailabilityInfo()
             }
         }
 
-        // Настройка окна
         window?.setLayout(
             (context.resources.displayMetrics.widthPixels * 0.9).toInt(),
             android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -68,11 +73,17 @@ class QuantityPickerDialog(
             }
 
             btnIncrease.setOnClickListener {
-                if (selectedQuantity < stockQuantity && selectedQuantity < 99) {
+                val totalAfterIncrease = currentQuantityInCart + selectedQuantity + 1
+                if (selectedQuantity < 99 && totalAfterIncrease <= stockQuantity) {
                     selectedQuantity++
                     updateQuantityDisplay()
-                } else if (selectedQuantity >= stockQuantity) {
-                    Toast.makeText(context, "Недостаточно товара на складе", Toast.LENGTH_SHORT).show()
+                } else if (totalAfterIncrease > stockQuantity) {
+                    val availableToAdd = stockQuantity - currentQuantityInCart
+                    Toast.makeText(
+                        context,
+                        "Можно добавить еще только $availableToAdd шт. (в корзине уже $currentQuantityInCart шт.)",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -81,13 +92,20 @@ class QuantityPickerDialog(
             }
 
             btnAddToCart.setOnClickListener {
+                val totalQuantity = currentQuantityInCart + selectedQuantity
+
                 if (stockQuantity <= 0) {
                     Toast.makeText(context, "Товар отсутствует на складе", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                if (selectedQuantity > stockQuantity) {
-                    Toast.makeText(context, "Выбранное количество превышает остаток на складе", Toast.LENGTH_SHORT).show()
+                if (totalQuantity > stockQuantity) {
+                    val availableToAdd = stockQuantity - currentQuantityInCart
+                    Toast.makeText(
+                        context,
+                        "Недостаточно товара на складе. Доступно для добавления: $availableToAdd шт.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@setOnClickListener
                 }
 
@@ -100,9 +118,10 @@ class QuantityPickerDialog(
     private fun updateQuantityDisplay() {
         binding.tvQuantity.text = selectedQuantity.toString()
         updateTotalText()
+        updateAvailabilityInfo()
 
-        // Обновляем состояние кнопки добавления
-        binding.btnAddToCart.isEnabled = stockQuantity > 0 && selectedQuantity <= stockQuantity
+        val totalQuantity = currentQuantityInCart + selectedQuantity
+        binding.btnAddToCart.isEnabled = stockQuantity > 0 && totalQuantity <= stockQuantity
     }
 
     private fun updateTotalText() {
@@ -116,10 +135,21 @@ class QuantityPickerDialog(
             in 2..4 -> "$selectedQuantity товара"
             else -> "$selectedQuantity товаров"
         }
+    }
 
-        // Добавляем предупреждение если остатков мало
-        if (stockQuantity < 5 && selectedQuantity <= stockQuantity) {
-            binding.tvQuantityText.text = "${binding.tvQuantityText.text} (осталось $stockQuantity шт.)"
+    private fun updateAvailabilityInfo() {
+        val remainingStock = stockQuantity - currentQuantityInCart
+
+        when {
+            currentQuantityInCart > 0 -> {
+                binding.tvQuantityText.text = "${binding.tvQuantityText.text}\n" +
+                        "В корзине: $currentQuantityInCart шт.\n" +
+                        "Доступно для добавления: $remainingStock шт."
+            }
+            stockQuantity < 5 -> {
+                binding.tvQuantityText.text = "${binding.tvQuantityText.text}\n" +
+                        "Осталось на складе: $stockQuantity шт."
+            }
         }
     }
 }

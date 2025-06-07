@@ -102,14 +102,23 @@ class ProductHorizontalAdapter(
             val dialog = QuantityPickerDialog(
                 context,
                 product.name,
+                product.id, // добавляем ID товара
                 product.stock_quantity
             ) { quantity ->
-                CartManager.addToCart(context, product, quantity) // исправлено: передаем context
-                Toast.makeText(
-                    context, // исправлено: передаем context
-                    "Добавлено в корзину: ${product.name} (${quantity} шт.)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                val success = CartManager.addToCart(context, product, quantity)
+                if (success) {
+                    Toast.makeText(
+                        context,
+                        "Добавлено в корзину: ${product.name} (${quantity} шт.)",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Недостаточно товара на складе",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
             dialog.show()
         }

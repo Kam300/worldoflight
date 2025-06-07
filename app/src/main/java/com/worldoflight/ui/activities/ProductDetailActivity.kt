@@ -120,12 +120,6 @@ class ProductDetailActivity : AppCompatActivity() {
             btnAddToCart.setOnClickListener {
                 currentProduct?.let { product ->
                     showQuantityDialog(product)
-                    CartManager.addToCart(this@ProductDetailActivity, product)
-                    android.widget.Toast.makeText(
-                        this@ProductDetailActivity,
-                        "Добавлено в корзину: ${product.name}",
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
                 }
             }
 
@@ -164,17 +158,27 @@ class ProductDetailActivity : AppCompatActivity() {
         val isSelected: Boolean = false
     )
     private fun showQuantityDialog(product: Product) {
+        val context = binding.root.context
         val dialog = QuantityPickerDialog(
-            context = binding.root.context,
+            context,
             product.name,
-            product.stock_quantity  // передаем остатки из базы данных
+            product.id, // добавляем ID товара
+            product.stock_quantity
         ) { quantity ->
-            CartManager.addToCart(this, product, quantity)
-            Toast.makeText(
-                this,
-                "Добавлено в корзину: ${product.name} (${quantity} шт.)",
-                Toast.LENGTH_SHORT
-            ).show()
+            val success = CartManager.addToCart(context, product, quantity)
+            if (success) {
+                Toast.makeText(
+                    context,
+                    "Добавлено в корзину: ${product.name} (${quantity} шт.)",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Недостаточно товара на складе",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
         dialog.show()
     }

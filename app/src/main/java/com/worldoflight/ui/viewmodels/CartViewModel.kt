@@ -47,21 +47,25 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun updateQuantity(context: Context, cartItemId: Long, newQuantity: Int) {
+    fun updateQuantity(context: Context, productId: Long, newQuantity: Int) {
         viewModelScope.launch {
             try {
-                CartManager.updateQuantity(context, cartItemId, newQuantity)
-                loadCartItems(context)
+                val success = CartManager.updateQuantity(context, productId, newQuantity)
+                if (success) {
+                    loadCartItems(context)
+                } else {
+                    _error.value = "Недостаточно товара на складе"
+                }
             } catch (e: Exception) {
                 _error.value = e.message
             }
         }
     }
 
-    fun removeFromCart(context: Context, cartItemId: Long) {
+    fun removeFromCart(context: Context, productId: Long) {
         viewModelScope.launch {
             try {
-                CartManager.removeFromCart(context, cartItemId)
+                CartManager.removeFromCart(context, productId)
                 loadCartItems(context)
             } catch (e: Exception) {
                 _error.value = e.message
@@ -82,7 +86,7 @@ class CartViewModel : ViewModel() {
 
     private fun calculateTotals(items: List<CartItem>) {
         // Подсчет суммы товаров (подытог)
-        val subtotal = items.sumOf { it.price * it.quantity }
+        val subtotal = items.sumOf { (it.product?.price ?: it.price) * it.quantity }
         _subtotalPrice.value = subtotal
 
         // Расчет доставки (бесплатная доставка от 1000 рублей)

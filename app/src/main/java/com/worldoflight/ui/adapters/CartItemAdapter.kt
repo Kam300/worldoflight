@@ -46,7 +46,7 @@ class CartItemAdapter(
                 tvQuantity.text = cartItem.quantity.toString()
 
                 // Общая стоимость за все количество
-                val totalPrice = cartItem.price * cartItem.quantity
+                val totalPrice = cartItem.price?.times(cartItem.quantity)
                 tvTotalPrice.text = "Итого: ₽${String.format("%.2f", totalPrice)}"
 
                 // Установка изображения товара
