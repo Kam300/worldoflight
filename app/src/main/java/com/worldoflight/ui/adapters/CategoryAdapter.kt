@@ -1,5 +1,6 @@
 package com.worldoflight.ui.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -50,11 +51,14 @@ class CategoryAdapter(
 
                 root.setOnClickListener {
                     val context = root.context
-                    val intent = android.content.Intent(context, CategoryProductsActivity::class.java).apply {
-                        putExtra(CategoryProductsActivity.EXTRA_CATEGORY_NAME, category.name)
-                        putExtra(CategoryProductsActivity.EXTRA_CATEGORY_KEY, getCategoryKey(category.name))
+                    val intent = Intent(context, CategoryProductsActivity::class.java).apply {
+                        putExtra("category_name", category.name)
+                        putExtra("category_key", getCategoryKey(category.name))
                     }
                     context.startActivity(intent)
+
+                    // Также вызываем callback
+                    onItemClick(category)
                 }
             }
         }
@@ -70,7 +74,6 @@ class CategoryAdapter(
                 else -> "all"
             }
         }
-
     }
 
     private class CategoryDiffCallback : DiffUtil.ItemCallback<CategoryItem>() {
