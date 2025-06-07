@@ -4,10 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.worldoflight.data.models.UpdateProfileRequest
+import com.worldoflight.data.models.UserProfile
 import com.worldoflight.data.remote.SupabaseClient
 import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -54,7 +58,6 @@ class AuthRepository(private val context: Context) {
                 token = token
             )
 
-            // Сохраняем сессию после успешной верификации
             val user = supabase.auth.currentUserOrNull()
             if (user != null) {
                 saveUserSession(user.id, email)
@@ -100,8 +103,7 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-
-    // Сброс пароля с OTP
+    // Сброс пароля
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             supabase.auth.resetPasswordForEmail(email)
@@ -137,30 +139,15 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-    // Исправленный метод повторной отправки для сброса пароля
+    // Повторная отправка для сброса пароля
     suspend fun resendPasswordResetOtp(email: String): Result<Boolean> {
         return try {
-            // Повторно отправляем запрос на сброс пароля
             supabase.auth.resetPasswordForEmail(email)
             Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-    // Альтернативный метод с использованием OTP API
-    suspend fun resendPasswordResetOtpAlternative(email: String): Result<Boolean> {
-        return try {
-            supabase.auth.resendEmail(
-                type = OtpType.Email.RECOVERY,
-                email = email
-            )
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-
 
     // Выход пользователя
     suspend fun signOut(): Result<Unit> {
@@ -178,6 +165,88 @@ class AuthRepository(private val context: Context) {
         return encryptedPrefs.getBoolean("is_logged_in", false)
     }
 
+    // ИСПРАВЛЕННЫЙ метод получения профиля
+    suspend fun getUserProfile(): Result<UserProfile?> {
+        return try {
+            val user = supabase.auth.currentUserOrNull()
+            if (user != null) {
+                val profile = supabase.from("profiles")
+                    .select {
+                        filter {
+                            eq("id", user.id)  // ✅ eq внутри filter блока
+                        }
+                    }
+                    .decodeSingle<UserProfile>()
+                Result.success(profile)
+            } else {
+                Result.failure(Exception("Пользователь не авторизован"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    // ИСПРАВЛЕННЫЙ метод обновления профиля
+    suspend fun updateUserProfile(updateRequest: UpdateProfileRequest): Result<UserProfile> {
+        return try {
+            val user = supabase.auth.currentUserOrNull()
+            if (user != null) {
+                // Обновляем профиль
+                supabase.from("profiles")
+                    .update(updateRequest) {
+                        filter {
+                            eq("id", user.id)  // ✅ eq внутри filter блока
+                        }
+                    }
+
+                // Получаем обновленный профиль
+                val updatedProfile = supabase.from("profiles")
+                    .select {
+                        filter {
+                            eq("id", user.id)  // ✅ eq внутри filter блока
+                        }
+                    }
+                    .decodeSingle<UserProfile>()
+
+                Result.success(updatedProfile)
+            } else {
+                Result.failure(Exception("Пользователь не авторизован"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+
+    // ПОЛНАЯ версия с Supabase Storage
+    suspend fun uploadAvatar(imageBytes: ByteArray, fileName: String): Result<String> {
+        return try {
+            val user = supabase.auth.currentUserOrNull()
+            if (user != null) {
+                val bucket = supabase.storage.from("avatars")
+                val path = "${user.id}/$fileName"
+
+                // Удаляем старый файл если существует
+                try {
+                    bucket.delete(path)
+                } catch (e: Exception) {
+                    // Игнорируем ошибку если файл не существует
+                }
+
+                // Загружаем новый файл
+                bucket.upload(path, imageBytes, upsert = true)
+
+                // Получаем публичный URL
+                val publicUrl = bucket.publicUrl(path)
+
+                Result.success(publicUrl)
+            } else {
+                Result.failure(Exception("Пользователь не авторизован"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     // Сохранение сессии пользователя
     private fun saveUserSession(userId: String, email: String) {

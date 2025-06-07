@@ -81,6 +81,12 @@
             android:name=".ui.activities.NewPasswordActivity"
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+        <activity
+            android:name=".ui.activities.EditProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
 
 
     </application>
