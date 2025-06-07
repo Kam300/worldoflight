@@ -26,10 +26,8 @@ class CategoryProductsActivity : AppCompatActivity() {
         setupRecyclerView()
         setupObservers()
 
-        // Загружаем товары по категории
-        if (categoryKey.isNotEmpty()) {
-            productViewModel.loadProductsByCategory(categoryKey)
-        }
+        // ИСПРАВЛЕННАЯ загрузка товаров
+        loadProductsForCategory(categoryKey)
     }
 
     private fun setupToolbar(categoryName: String) {
@@ -56,14 +54,43 @@ class CategoryProductsActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupObservers() {
-        productViewModel.products.observe(this) { products ->
+    private fun loadProductsForCategory(categoryKey: String) {
+        when (categoryKey) {
+            "all" -> {
+                // Для категории "Все" загружаем популярные товары
+                productViewModel.loadPopularProducts()
+            }
+            else -> {
+                // Для конкретной категории загружаем товары по категории
+                productViewModel.loadProductsByCategory(categoryKey)
+            }
+        }
+    }
+    private fun updateProductsList(products: List<com.worldoflight.data.models.Product>) {
+        if (products.isEmpty()) {
+            binding.rvCategoryProducts.visibility = android.view.View.GONE
+            binding.emptyStateLayout.visibility = android.view.View.VISIBLE
+        } else {
+            binding.rvCategoryProducts.visibility = android.view.View.VISIBLE
+            binding.emptyStateLayout.visibility = android.view.View.GONE
             categoryProductsAdapter.submitList(products)
         }
+    }
+    private fun setupObservers() {
 
+        // Наблюдаем за products для категорий
+        productViewModel.products.observe(this) { products ->
+            updateProductsList(products)
+        }
+
+        // Наблюдаем за popularProducts для категории "Все"
+        productViewModel.popularProducts.observe(this) { products ->
+            updateProductsList(products)
+        }
         productViewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
         }
+
 
         productViewModel.errorMessage.observe(this) { error ->
             error?.let {

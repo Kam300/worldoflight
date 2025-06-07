@@ -49,19 +49,13 @@ class CategoryAdapter(
 
                 ivCategoryIcon.setImageResource(iconRes)
 
+                // УБИРАЕМ ДУБЛИРОВАНИЕ - оставляем только один обработчик
                 root.setOnClickListener {
-                    val context = root.context
-                    val intent = Intent(context, CategoryProductsActivity::class.java).apply {
-                        putExtra("category_name", category.name)
-                        putExtra("category_key", getCategoryKey(category.name))
-                    }
-                    context.startActivity(intent)
-
-                    // Также вызываем callback
                     onItemClick(category)
                 }
             }
         }
+    }
 
         private fun getCategoryKey(categoryName: String): String {
             return when (categoryName) {
@@ -85,4 +79,3 @@ class CategoryAdapter(
             return oldItem == newItem
         }
     }
-}
