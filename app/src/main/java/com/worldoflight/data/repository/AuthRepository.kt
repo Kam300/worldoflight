@@ -2,6 +2,7 @@ package com.worldoflight.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.worldoflight.data.models.UpdateProfileRequest
@@ -14,23 +15,51 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import java.io.File
 
 class AuthRepository(private val context: Context) {
 
     private val supabase = SupabaseClient.client
 
-    private val encryptedPrefs: SharedPreferences by lazy {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+    private val encryptedPrefs by lazy {
+        createEncryptedPreferences()
+    }
 
-        EncryptedSharedPreferences.create(
-            context,
-            "auth_prefs",
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+    private fun createEncryptedPreferences(): SharedPreferences? {
+        return try {
+            val masterKey = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            EncryptedSharedPreferences.create(
+                context,
+                "auth_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            // Логируем ошибку
+            Log.e("AuthRepository", "Failed to create EncryptedSharedPreferences", e)
+
+            // Очищаем поврежденные данные
+            clearCorruptedData()
+
+            // Возвращаем обычные SharedPreferences как fallback
+            context.getSharedPreferences("auth_prefs_fallback", Context.MODE_PRIVATE)
+        }
+    }
+    private fun clearCorruptedData() {
+        try {
+            // Удаляем поврежденные файлы
+            val prefsDir = File(context.applicationInfo.dataDir, "shared_prefs")
+            val encryptedFile = File(prefsDir, "auth_prefs.xml")
+            if (encryptedFile.exists()) {
+                encryptedFile.delete()
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Failed to clear corrupted data", e)
+        }
     }
 
     // Регистрация пользователя с OTP
@@ -162,7 +191,12 @@ class AuthRepository(private val context: Context) {
 
     // Проверка аутентификации
     fun isUserLoggedIn(): Boolean {
-        return encryptedPrefs.getBoolean("is_logged_in", false)
+        return try {
+            encryptedPrefs?.getBoolean("is_logged_in", false) ?: false
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Error checking login status", e)
+            false
+        }
     }
 
     // ИСПРАВЛЕННЫЙ метод получения профиля
@@ -250,17 +284,17 @@ class AuthRepository(private val context: Context) {
 
     // Сохранение сессии пользователя
     private fun saveUserSession(userId: String, email: String) {
-        encryptedPrefs.edit()
-            .putBoolean("is_logged_in", true)
-            .putString("user_id", userId)
-            .putString("user_email", email)
-            .apply()
+        encryptedPrefs?.edit()
+            ?.putBoolean("is_logged_in", true)
+            ?.putString("user_id", userId)
+            ?.putString("user_email", email)
+            ?.apply()
     }
 
     // Очистка сессии пользователя
     private fun clearUserSession() {
-        encryptedPrefs.edit()
-            .clear()
-            .apply()
+        encryptedPrefs?.edit()
+            ?.clear()
+            ?.apply()
     }
 }

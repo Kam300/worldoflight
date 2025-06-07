@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ActivityProductDetailBinding
+import com.worldoflight.dialogs.QuantityPickerDialog
 import com.worldoflight.ui.adapters.ProductVariantsAdapter
-import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
@@ -24,6 +24,7 @@ class ProductDetailActivity : AppCompatActivity() {
         const val EXTRA_PRODUCT_PRICE = "product_price"
         const val EXTRA_PRODUCT_CATEGORY = "product_category"
         const val EXTRA_PRODUCT_DESCRIPTION = "product_description"
+        const val EXTRA_PRODUCT_STOCK = "product_stock"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,13 +70,15 @@ class ProductDetailActivity : AppCompatActivity() {
         val productPrice = intent.getDoubleExtra(EXTRA_PRODUCT_PRICE, 0.0)
         val productCategory = intent.getStringExtra(EXTRA_PRODUCT_CATEGORY) ?: ""
         val productDescription = intent.getStringExtra(EXTRA_PRODUCT_DESCRIPTION) ?: ""
+        val stockQuantity = intent.getIntExtra(EXTRA_PRODUCT_STOCK, 0) // получаем остатки
 
         currentProduct = Product(
             id = productId,
             name = productName,
             price = productPrice,
             category = productCategory,
-            description = productDescription
+            description = productDescription ,
+            stock_quantity  = stockQuantity // передаем остатки
         )
 
         updateUI()
@@ -162,8 +165,9 @@ class ProductDetailActivity : AppCompatActivity() {
     )
     private fun showQuantityDialog(product: Product) {
         val dialog = QuantityPickerDialog(
-            context = this,
-            productName = product.name
+            context = binding.root.context,
+            product.name,
+            product.stock_quantity  // передаем остатки из базы данных
         ) { quantity ->
             CartManager.addToCart(this, product, quantity)
             Toast.makeText(

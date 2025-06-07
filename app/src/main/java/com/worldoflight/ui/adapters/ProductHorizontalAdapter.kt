@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemProductHorizontalBinding
+import com.worldoflight.dialogs.QuantityPickerDialog
 import com.worldoflight.ui.activities.ProductDetailActivity
-import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
@@ -88,6 +88,7 @@ class ProductHorizontalAdapter(
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_PRICE, product.price)
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_STOCK, product.stock_quantity)
                     }
                     context.startActivity(intent)
                 }
@@ -97,17 +98,18 @@ class ProductHorizontalAdapter(
             }
         }
         private fun showQuantityDialog(product: Product) {
+            val context = binding.root.context
             val dialog = QuantityPickerDialog(
-                context = binding.root.context,
-                productName = product.name
+                context,
+                product.name,
+                product.stock_quantity
             ) { quantity ->
-                CartManager.addToCart(binding.root.context, product, quantity)
+                CartManager.addToCart(context, product, quantity) // исправлено: передаем context
                 Toast.makeText(
-                    binding.root.context,
+                    context, // исправлено: передаем context
                     "Добавлено в корзину: ${product.name} (${quantity} шт.)",
                     Toast.LENGTH_SHORT
                 ).show()
-                onAddToCart(product)
             }
             dialog.show()
         }

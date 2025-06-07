@@ -14,7 +14,8 @@ data class Product(
     val brand: String = "",
     val power: String = "",
     val color_temperature: String = "",
-    val created_at: String = ""
+    val created_at: String = "",
+    val stock_quantity : Int = 0, // Количество на складе
 ) {
     // Вычисляемые свойства для совместимости с UI
     val formattedPrice: String

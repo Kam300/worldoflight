@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemPopularGridBinding
+import com.worldoflight.dialogs.QuantityPickerDialog
 import com.worldoflight.ui.activities.ProductDetailActivity
-import com.worldoflight.ui.dialogs.QuantityPickerDialog
 import com.worldoflight.utils.CartManager
 import com.worldoflight.utils.FavoritesManager
 
@@ -57,35 +57,11 @@ class PopularGridAdapter(
                     "led_strips" -> ivProductImage.setImageResource(R.drawable.ic_led)
                     else -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
                 }
-                root.setOnClickListener {
-                    val context = root.context
-                    val intent = android.content.Intent(context, ProductDetailActivity::class.java).apply {
-                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.id)
-                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_NAME, product.name)
-                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_PRICE, product.price)
-                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
-                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
-                    }
-                    context.startActivity(intent)
-                }
-
 
                 // Установка состояния избранного
                 updateFavoriteIcon(product)
 
-                root.setOnClickListener {
-                    onItemClick(product)
-                }
-
-
-
-
-                ivFavorite.setOnClickListener {
-                    toggleFavorite(product)
-                }
-                btnAddCart.setOnClickListener {
-                    showQuantityDialog(product)
-                }
+                // Клик по карточке товара
                 root.setOnClickListener {
                     val context = root.context
                     val intent = android.content.Intent(context, ProductDetailActivity::class.java).apply {
@@ -94,26 +70,40 @@ class PopularGridAdapter(
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_PRICE, product.price)
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_STOCK, product.stock_quantity)
                     }
                     context.startActivity(intent)
+                }
+
+                // Клик по кнопке избранного
+                ivFavorite.setOnClickListener {
+                    toggleFavorite(product)
+                }
+
+                // Клик по кнопке добавления в корзину
+                btnAddCart.setOnClickListener {
+                    showQuantityDialog(product)
                 }
             }
         }
 
         private fun showQuantityDialog(product: Product) {
+            val context = binding.root.context
             val dialog = QuantityPickerDialog(
-                context = binding.root.context,
-                productName = product.name
+                context,
+                product.name,
+                product.stock_quantity
             ) { quantity ->
-                CartManager.addToCart(binding.root.context, product, quantity)
-                android.widget.Toast.makeText(
-                    binding.root.context,
+                CartManager.addToCart(context, product, quantity) // исправлено: передаем context
+                Toast.makeText(
+                    context, // исправлено: передаем context
                     "Добавлено в корзину: ${product.name} (${quantity} шт.)",
-                    android.widget.Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT
                 ).show()
             }
             dialog.show()
         }
+
         private fun updateFavoriteIcon(product: Product) {
             val isFavorite = FavoritesManager.isFavorite(binding.root.context, product.id)
             if (isFavorite) {
@@ -141,17 +131,17 @@ class PopularGridAdapter(
 
             if (isFavorite) {
                 FavoritesManager.removeFromFavorites(context, product)
-                android.widget.Toast.makeText(
+                Toast.makeText(
                     context,
                     "Удалено из избранного",
-                    android.widget.Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT
                 ).show()
             } else {
                 FavoritesManager.addToFavorites(context, product)
-                android.widget.Toast.makeText(
+                Toast.makeText(
                     context,
                     "Добавлено в избранное",
-                    android.widget.Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT
                 ).show()
             }
 

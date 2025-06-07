@@ -8,13 +8,13 @@ class ProductRepository {
 
     private val supabase = SupabaseClient.client
 
-    // Получение всех продуктов
     suspend fun getAllProducts(): Result<List<Product>> {
         return try {
             val products = supabase.from("products")
                 .select {
                     filter {
                         eq("in_stock", true)
+                        gt("stock_quantity", 0) // только товары с остатками
                     }
                 }
                 .decodeList<Product>()
@@ -24,13 +24,14 @@ class ProductRepository {
         }
     }
 
-    // Получение популярных продуктов (первые 10)
+    // Получение популярных продуктов с остатками
     suspend fun getPopularProducts(): Result<List<Product>> {
         return try {
             val products = supabase.from("products")
                 .select {
                     filter {
                         eq("in_stock", true)
+                        gt("stock_quantity", 0) // только товары с остатками
                     }
                     limit(10)
                 }
@@ -41,6 +42,26 @@ class ProductRepository {
         }
     }
 
+    // Обновление остатков товара после покупки
+    suspend fun updateProductStock(productId: Long, newQuantity: Int): Result<Boolean> {
+        return try {
+            supabase.from("products")
+                .update({
+                    set("stock_quantity", newQuantity)
+                    set("in_stock", newQuantity > 0)
+                }) {
+                    filter {
+                        eq("id", productId)
+                    }
+                }
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+
     // Получение продуктов по категории
     suspend fun getProductsByCategory(category: String): Result<List<Product>> {
         return try {
@@ -49,6 +70,7 @@ class ProductRepository {
                     filter {
                         eq("in_stock", true)
                         eq("category", category)
+                        gt("stock_quantity", 0)
                     }
                 }
                 .decodeList<Product>()
@@ -65,7 +87,6 @@ class ProductRepository {
                 .select {
                     filter {
                         eq("id", productId)
-                        eq("in_stock", true)
                     }
                 }
                 .decodeSingle<Product>()
@@ -83,6 +104,7 @@ class ProductRepository {
                     filter {
                         eq("in_stock", true)
                         ilike("name", "%$query%")
+                        gt("stock_quantity", 0)
                     }
                 }
                 .decodeList<Product>()
@@ -100,6 +122,7 @@ class ProductRepository {
                     filter {
                         eq("in_stock", true)
                         eq("brand", brand)
+                        gt("stock_quantity", 0)
                     }
                 }
                 .decodeList<Product>()
@@ -118,6 +141,7 @@ class ProductRepository {
                         eq("in_stock", true)
                         gte("price", minPrice)
                         lte("price", maxPrice)
+                        gt("stock_quantity", 0)
                     }
                 }
                 .decodeList<Product>()
@@ -126,4 +150,6 @@ class ProductRepository {
             Result.failure(e)
         }
     }
+
+
 }
