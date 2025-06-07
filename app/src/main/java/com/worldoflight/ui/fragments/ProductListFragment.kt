@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.worldoflight.R
@@ -16,6 +17,7 @@ import com.worldoflight.ui.activities.CategoryProductsActivity
 import com.worldoflight.ui.activities.PopularActivity
 import com.worldoflight.ui.adapters.CategoryAdapter
 import com.worldoflight.ui.adapters.ProductHorizontalAdapter
+import com.worldoflight.ui.viewmodels.ProductViewModel
 
 class ProductListFragment : Fragment() {
 
@@ -24,6 +26,7 @@ class ProductListFragment : Fragment() {
 
     private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var popularProductsAdapter: ProductHorizontalAdapter
+    private val productViewModel: ProductViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,15 +43,15 @@ class ProductListFragment : Fragment() {
         setupCategoriesRecyclerView()
         setupPopularProductsRecyclerView()
         setupClickListeners()
+        setupObservers()
         loadData()
     }
-
 
     private fun setupCategoriesRecyclerView() {
         categoryAdapter = CategoryAdapter { category ->
             val intent = android.content.Intent(requireContext(), CategoryProductsActivity::class.java).apply {
-                putExtra(CategoryProductsActivity.EXTRA_CATEGORY_NAME, category.name)
-                putExtra(CategoryProductsActivity.EXTRA_CATEGORY_KEY, getCategoryKey(category.name))
+                putExtra("category_name", category.name)
+                putExtra("category_key", getCategoryKey(category.name))
             }
             startActivity(intent)
         }
@@ -70,7 +73,6 @@ class ProductListFragment : Fragment() {
             else -> "all"
         }
     }
-
 
     private fun setupClickListeners() {
         // Найдите TextView "Все" в макете и добавьте клик
@@ -124,9 +126,30 @@ class ProductListFragment : Fragment() {
         }
     }
 
+    private fun setupObservers() {
+        productViewModel.popularProducts.observe(viewLifecycleOwner) { products ->
+            if (products.isNotEmpty()) {
+                popularProductsAdapter.submitList(products)
+            } else {
+                // Загружаем тестовые данные если нет данных из БД
+                loadTestProducts()
+            }
+        }
+
+        productViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                android.widget.Toast.makeText(requireContext(), it, android.widget.Toast.LENGTH_LONG).show()
+                productViewModel.clearError()
+                // Загружаем тестовые данные при ошибке
+                loadTestProducts()
+            }
+        }
+    }
+
     private fun loadData() {
         loadCategories()
-        loadPopularProducts()
+        // Загружаем популярные товары из БД
+        productViewModel.loadPopularProducts()
     }
 
     private fun loadCategories() {
@@ -142,7 +165,7 @@ class ProductListFragment : Fragment() {
         categoryAdapter.submitList(categories)
     }
 
-    private fun loadPopularProducts() {
+    private fun loadTestProducts() {
         val testProducts = listOf(
             Product(
                 id = 1,

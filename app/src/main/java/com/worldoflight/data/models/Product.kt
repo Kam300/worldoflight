@@ -15,14 +15,42 @@ data class Product(
     val power: String = "",
     val color_temperature: String = "",
     val created_at: String = ""
-)
+) {
+    // Вычисляемые свойства для совместимости с UI
+    val formattedPrice: String
+        get() = "₽${String.format("%.0f", price)}.00"
 
-enum class ProductCategory(val displayName: String) {
-    BULBS("Лампочки"),
-    CHANDELIERS("Люстры"),
-    FLOOR_LAMPS("Торшеры"),
-    TABLE_LAMPS("Настольные лампы"),
-    WALL_LAMPS("Бра"),
-    LED_STRIPS("LED ленты")
+    val categoryDisplayName: String
+        get() = when (category) {
+            "bulbs" -> "Лампочки"
+            "chandeliers" -> "Люстры"
+            "floor_lamps" -> "Торшеры"
+            "table_lamps" -> "Настольные лампы"
+            "wall_lamps" -> "Бра"
+            "led_strips" -> "LED ленты"
+            else -> category
+        }
 }
 
+@Serializable
+data class Category(
+    val id: Long = 0,
+    val name: String = "",
+    val display_name: String = "",
+    val description: String = "",
+    val icon_name: String = "",
+    val image_url: String = "",
+    val is_active: Boolean = true,
+    val sort_order: Int = 0,
+    val created_at: String = "",
+    val updated_at: String = ""
+)
+
+enum class ProductCategory(val key: String, val displayName: String) {
+    BULBS("bulbs", "Лампочки"),
+    CHANDELIERS("chandeliers", "Люстры"),
+    FLOOR_LAMPS("floor_lamps", "Торшеры"),
+    TABLE_LAMPS("table_lamps", "Настольные лампы"),
+    WALL_LAMPS("wall_lamps", "Бра"),
+    LED_STRIPS("led_strips", "LED ленты")
+}

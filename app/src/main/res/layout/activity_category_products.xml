@@ -2,23 +2,20 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_secondary"
-    tools:context=".ui.activities.CategoryProductsActivity">
+    android:background="@color/background_primary">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_gold"
+        android:background="@color/background_primary"
         android:minHeight="?attr/actionBarSize"
         app:title="Категория"
-        app:titleCentered="true"
-        app:titleTextColor="@color/white"
-        app:titleTextAppearance="@style/TextAppearance.WorldOfLight.Headline2"
+        app:titleTextColor="@color/text_primary"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/text_primary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -27,13 +24,23 @@
         android:id="@+id/rv_category_products"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="@dimen/spacing_md"
+        android:padding="8dp"
         android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_category_product" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Добавляем ProgressBar -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Пустое состояние -->
     <LinearLayout
@@ -49,27 +56,19 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/ic_lightbulb"
-            android:layout_marginBottom="@dimen/spacing_lg"
-            app:tint="@color/text_secondary" />
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_empty_box"
+            app:tint="@color/text_secondary"
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Товары не найдены"
-            android:textAppearance="@style/TextAppearance.WorldOfLight.Headline2"
+            android:text="В этой категории пока нет товаров"
+            android:textSize="16sp"
             android:textColor="@color/text_secondary"
-            android:layout_marginBottom="@dimen/spacing_sm" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="В данной категории пока нет товаров"
-            android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
-            android:textColor="@color/text_secondary"
-            android:textAlignment="center" />
+            android:fontFamily="@font/raleway" />
 
     </LinearLayout>
 
