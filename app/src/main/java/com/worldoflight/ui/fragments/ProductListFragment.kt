@@ -132,7 +132,7 @@ class ProductListFragment : Fragment() {
                 popularProductsAdapter.submitList(products)
             } else {
                 // Загружаем тестовые данные если нет данных из БД
-                loadTestProducts()
+
             }
         }
 
@@ -141,7 +141,7 @@ class ProductListFragment : Fragment() {
                 android.widget.Toast.makeText(requireContext(), it, android.widget.Toast.LENGTH_LONG).show()
                 productViewModel.clearError()
                 // Загружаем тестовые данные при ошибке
-                loadTestProducts()
+
             }
         }
     }
@@ -165,60 +165,7 @@ class ProductListFragment : Fragment() {
         categoryAdapter.submitList(categories)
     }
 
-    private fun loadTestProducts() {
-        val testProducts = listOf(
-            Product(
-                id = 1,
-                name = "LED лампа E27 10W",
-                description = "Энергосберегающая LED лампа с теплым светом",
-                price = 752.0,
-                category = "bulbs",
-                image_url = "",
-                in_stock = true,
-                brand = "Philips",
-                power = "10W",
-                color_temperature = "3000K"
-            ),
-            Product(
-                id = 2,
-                name = "Хрустальная люстра",
-                description = "Элегантная хрустальная люстра для гостиной",
-                price = 15999.0,
-                category = "chandeliers",
-                image_url = "",
-                in_stock = true,
-                brand = "Crystal Light",
-                power = "60W",
-                color_temperature = "2700K"
-            ),
-            Product(
-                id = 3,
-                name = "Торшер современный",
-                description = "Стильный торшер в современном стиле",
-                price = 8999.0,
-                category = "floor_lamps",
-                image_url = "",
-                in_stock = true,
-                brand = "Modern Light",
-                power = "40W",
-                color_temperature = "4000K"
-            ),
-            Product(
-                id = 4,
-                name = "Настольная лампа",
-                description = "Компактная настольная лампа для работы",
-                price = 2999.0,
-                category = "table_lamps",
-                image_url = "",
-                in_stock = true,
-                brand = "Desk Light",
-                power = "15W",
-                color_temperature = "4000K"
-            )
-        )
 
-        popularProductsAdapter.submitList(testProducts)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
