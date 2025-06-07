@@ -12,7 +12,7 @@ import com.worldoflight.R
 class DeleteSwipeCallback(
     private val context: Context,
     private val onDelete: (Int) -> Unit
-) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
     private val deleteBackground = ColorDrawable(Color.parseColor("#FF6B6B"))
     private val deleteIcon: Drawable = ContextCompat.getDrawable(context, R.drawable.ic_delete_white)!!
@@ -25,7 +25,9 @@ class DeleteSwipeCallback(
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val position = viewHolder.adapterPosition
-        onDelete(position)
+        if (position != RecyclerView.NO_POSITION) {
+            onDelete(position)
+        }
     }
 
     override fun onChildDraw(
@@ -39,25 +41,48 @@ class DeleteSwipeCallback(
     ) {
         val itemView = viewHolder.itemView
         val itemHeight = itemView.height
+        val iconSize = 60
 
-        if (dX > 0) { // Свайп вправо - удаление
-            deleteBackground.setBounds(
-                itemView.left,
-                itemView.top,
-                itemView.left + dX.toInt(),
-                itemView.bottom
-            )
-            deleteBackground.draw(canvas)
+        when {
+            dX > 0 -> { // Свайп вправо
+                deleteBackground.setBounds(
+                    itemView.left,
+                    itemView.top,
+                    itemView.left + dX.toInt(),
+                    itemView.bottom
+                )
+                deleteBackground.draw(canvas)
 
-            // Рисуем иконку удаления
-            val iconTop = itemView.top + (itemHeight - 60) / 2
-            val iconBottom = iconTop + 60
-            val iconLeft = itemView.left + 40
-            val iconRight = iconLeft + 60
+                val iconTop = itemView.top + (itemHeight - iconSize) / 2
+                val iconMargin = (itemHeight - iconSize) / 2
+                val iconLeft = itemView.left + iconMargin
+                val iconRight = itemView.left + iconMargin + iconSize
+                val iconBottom = iconTop + iconSize
 
-            if (dX > 100) { // Показываем иконку только при достаточном свайпе
-                deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                deleteIcon.draw(canvas)
+                if (dX > iconSize + iconMargin) {
+                    deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                    deleteIcon.draw(canvas)
+                }
+            }
+            dX < 0 -> { // Свайп влево
+                deleteBackground.setBounds(
+                    itemView.right + dX.toInt(),
+                    itemView.top,
+                    itemView.right,
+                    itemView.bottom
+                )
+                deleteBackground.draw(canvas)
+
+                val iconTop = itemView.top + (itemHeight - iconSize) / 2
+                val iconMargin = (itemHeight - iconSize) / 2
+                val iconLeft = itemView.right - iconMargin - iconSize
+                val iconRight = itemView.right - iconMargin
+                val iconBottom = iconTop + iconSize
+
+                if (-dX > iconSize + iconMargin) {
+                    deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                    deleteIcon.draw(canvas)
+                }
             }
         }
 

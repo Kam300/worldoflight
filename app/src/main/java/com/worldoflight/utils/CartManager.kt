@@ -19,14 +19,13 @@ object CartManager {
     fun addToCart(context: Context, product: Product, quantity: Int): Boolean {
         val cartItems = getCartItems(context).toMutableList()
 
-        // Проверяем общее количество в корзине
         val existingItem = cartItems.find { it.product?.id == product.id }
         val currentQuantityInCart = existingItem?.quantity ?: 0
         val totalQuantity = currentQuantityInCart + quantity
 
-        // Проверяем, не превышает ли общее количество остатки на складе
+        // Проверяем остатки на складе
         if (totalQuantity > product.stock_quantity) {
-            return false // Недостаточно товара на складе
+            return false
         }
 
         if (existingItem != null) {
@@ -38,7 +37,7 @@ object CartManager {
             cartItems[index] = updatedItem
         } else {
             val newItem = CartItem(
-                id = System.currentTimeMillis(), // временный ID
+                id = System.currentTimeMillis(),
                 product_id = product.id,
                 quantity = quantity,
                 price = product.price,
@@ -57,22 +56,20 @@ object CartManager {
 
         if (itemIndex != -1) {
             val item = cartItems[itemIndex]
-            val product = item.product
 
-            if (product != null) {
-                // Проверяем остатки на складе
-                if (newQuantity > product.stock_quantity) {
-                    return false // Недостаточно товара на складе
+            if (newQuantity <= 0) {
+                // Удаляем товар если количество 0 или меньше
+                cartItems.removeAt(itemIndex)
+            } else {
+                // Проверяем остатки только при увеличении
+                val product = item.product
+                if (product != null && newQuantity > item.quantity && newQuantity > product.stock_quantity) {
+                    return false
                 }
-
-                if (newQuantity <= 0) {
-                    cartItems.removeAt(itemIndex)
-                } else {
-                    cartItems[itemIndex] = item.copy(quantity = newQuantity)
-                }
-                saveCartItems(context, cartItems)
-                return true
+                cartItems[itemIndex] = item.copy(quantity = newQuantity)
             }
+            saveCartItems(context, cartItems)
+            return true
         }
         return false
     }
@@ -84,9 +81,13 @@ object CartManager {
     }
 
     fun getCartItems(context: Context): List<CartItem> {
-        val json = getPrefs(context).getString(CART_KEY, "[]")
-        val type = object : TypeToken<List<CartItem>>() {}.type
-        return gson.fromJson(json, type) ?: emptyList()
+        return try {
+            val json = getPrefs(context).getString(CART_KEY, "[]")
+            val type = object : TypeToken<List<CartItem>>() {}.type
+            gson.fromJson(json, type) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     fun getCartItemsCount(context: Context): Int {
@@ -104,19 +105,5 @@ object CartManager {
     private fun saveCartItems(context: Context, items: List<CartItem>) {
         val json = gson.toJson(items)
         getPrefs(context).edit().putString(CART_KEY, json).apply()
-    }
-
-    // Проверка доступности товара
-    fun isProductAvailable(context: Context, productId: Long, requestedQuantity: Int): Boolean {
-        val cartItems = getCartItems(context)
-        val cartItem = cartItems.find { it.product?.id == productId }
-        val currentQuantityInCart = cartItem?.quantity ?: 0
-        val product = cartItem?.product
-
-        return if (product != null) {
-            (currentQuantityInCart + requestedQuantity) <= product.stock_quantity
-        } else {
-            true // Товар не в корзине, проверка будет при добавлении
-        }
     }
 }
