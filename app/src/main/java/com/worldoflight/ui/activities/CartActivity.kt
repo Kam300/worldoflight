@@ -5,8 +5,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.worldoflight.R
 import com.worldoflight.databinding.ActivityCartBinding
 import com.worldoflight.ui.adapters.CartAdapter
 import com.worldoflight.ui.utils.DeleteSwipeCallback
@@ -39,6 +41,11 @@ class CartActivity : AppCompatActivity() {
             setDisplayShowHomeEnabled(true)
             title = "Корзина"
         }
+
+        // Явно устанавливаем цвет иконки навигации
+        binding.toolbar.navigationIcon?.setTint(
+            ContextCompat.getColor(this, R.color.text_primary)
+        )
 
         binding.toolbar.setNavigationOnClickListener {
             finish()
@@ -114,18 +121,17 @@ class CartActivity : AppCompatActivity() {
         }
 
         cartViewModel.totalPrice.observe(this) { total ->
-            supportActionBar?.title = "Корзина"
+            // Можно добавить отображение общей суммы если нужно
+            supportActionBar?.subtitle = "Итого: ₽${String.format("%.2f", total)}"
         }
 
         cartViewModel.error.observe(this) { error ->
             error?.let {
-                // Показываем предупреждение о недостатке товара
-                binding.warningLayout.visibility = View.VISIBLE
-                binding.tvWarning.text = it
+                binding.warningLayout?.visibility = View.VISIBLE
+                binding.tvWarning?.text = it
 
-                // Скрываем через 3 секунды
-                binding.warningLayout.postDelayed({
-                    binding.warningLayout.visibility = View.GONE
+                binding.warningLayout?.postDelayed({
+                    binding.warningLayout?.visibility = View.GONE
                 }, 3000)
             }
         }

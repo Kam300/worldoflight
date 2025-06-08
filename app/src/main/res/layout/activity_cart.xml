@@ -9,15 +9,18 @@
 
     <!-- Toolbar -->
 
-    <!-- Количество товаров -->
+
+    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/background_primary"
-        app:navigationIcon="@drawable/ic_arrow_back"
         app:title="Корзина"
-        app:titleTextColor="@color/text_primary" />
+        app:titleTextColor="@color/text_primary"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/text_primary" />
+
 
     <TextView
         android:id="@+id/tv_items_count"
