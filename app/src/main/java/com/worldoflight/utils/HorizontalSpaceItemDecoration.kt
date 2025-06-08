@@ -1,4 +1,4 @@
-package com.worldoflight.ui.utils
+package com.worldoflight.utils
 
 import android.graphics.Rect
 import android.view.View

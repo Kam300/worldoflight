@@ -83,4 +83,5 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("io.github.jan-tennert.supabase:storage-kt")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 }
