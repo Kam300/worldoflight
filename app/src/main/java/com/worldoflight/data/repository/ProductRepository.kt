@@ -14,15 +14,23 @@ class ProductRepository {
                 .select {
                     filter {
                         eq("in_stock", true)
-                        gt("stock_quantity", 0) // только товары с остатками
+                        gt("stock_quantity", 0)
                     }
                 }
                 .decodeList<Product>()
+
+            // Логирование для отладки
+            products.forEach { product ->
+                android.util.Log.d("ProductRepo", "Product: ${product.name}, ImageURL: ${product.image_url}")
+            }
+
             Result.success(products)
         } catch (e: Exception) {
+            android.util.Log.e("ProductRepo", "Error loading products", e)
             Result.failure(e)
         }
     }
+
 
     // Получение популярных продуктов с остатками
     suspend fun getPopularProducts(): Result<List<Product>> {

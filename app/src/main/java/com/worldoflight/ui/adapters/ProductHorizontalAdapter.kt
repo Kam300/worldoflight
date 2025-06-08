@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.worldoflight.R
 import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.ItemProductHorizontalBinding
@@ -51,15 +53,29 @@ class ProductHorizontalAdapter(
                 btnAddCart.setOnClickListener {
                     showQuantityDialog(product)
                 }
-                // Установка изображения товара
-                when (product.category) {
-                    "bulbs" -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
-                    "chandeliers" -> ivProductImage.setImageResource(R.drawable.ic_chandelier)
-                    "floor_lamps" -> ivProductImage.setImageResource(R.drawable.ic_floor_lamp)
-                    "table_lamps" -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
-                    "wall_lamps" -> ivProductImage.setImageResource(R.drawable.ic_wall_lamp)
-                    "led_strips" -> ivProductImage.setImageResource(R.drawable.ic_led)
-                    else -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
+
+                // Логирование для отладки
+                android.util.Log.d("PopularGridAdapter", "Product: ${product.name}")
+                android.util.Log.d("PopularGridAdapter", "Image URL: ${product.image_url}")
+
+                // Простая загрузка изображения без listener
+                if (!product.image_url.isNullOrEmpty()) {
+                    try {
+                        Glide.with(binding.root.context)
+                            .load(product.image_url)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .placeholder(getIconByCategory(product.category))
+                            .error(getIconByCategory(product.category))
+                            .timeout(10000) // 10 секунд таймаут
+                            .into(ivProductImage)
+                        android.util.Log.d("Glide", "Loading image: ${product.image_url}")
+                    } catch (e: Exception) {
+                        android.util.Log.e("Glide", "Exception loading image: ${e.message}")
+                        ivProductImage.setImageResource(getIconByCategory(product.category))
+                    }
+                } else {
+                    android.util.Log.d("PopularGridAdapter", "No image URL, using category icon")
+                    ivProductImage.setImageResource(getIconByCategory(product.category))
                 }
 
                 // Установка состояния избранного
@@ -89,9 +105,11 @@ class ProductHorizontalAdapter(
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
                         putExtra(ProductDetailActivity.EXTRA_PRODUCT_STOCK, product.stock_quantity)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_IMAGE_URL, product.image_url) // Добавляем URL
                     }
                     context.startActivity(intent)
                 }
+
 
 
 
@@ -140,6 +158,17 @@ class ProductHorizontalAdapter(
                         R.color.text_secondary
                     )
                 )
+            }
+        }
+        private fun getIconByCategory(category: String): Int {
+            return when (category) {
+                "bulbs" -> R.drawable.ic_lightbulb
+                "chandeliers" -> R.drawable.ic_chandelier
+                "floor_lamps" -> R.drawable.ic_floor_lamp
+                "table_lamps" -> R.drawable.ic_lightbulb
+                "wall_lamps" -> R.drawable.ic_wall_lamp
+                "led_strips" -> R.drawable.ic_led
+                else -> R.drawable.ic_lightbulb
             }
         }
 

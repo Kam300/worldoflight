@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.worldoflight.R
 import com.worldoflight.data.models.CartItem
 import com.worldoflight.databinding.ItemCartBinding
@@ -34,7 +36,25 @@ class CartAdapter(
         fun bind(cartItem: CartItem) {
             binding.apply {
                 val product = cartItem.product
+                if (product != null) {
+                    android.util.Log.d("PopularGridAdapter", "Image URL: ${product.image_url}")
+                }
 
+                if (!product?.image_url.isNullOrEmpty()) {
+                    try {
+                        Glide.with(binding.root.context)
+                            .load(product?.image_url)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .placeholder(getIconByCategory(product?.category ?: ""))
+                            .error(getIconByCategory(product?.category ?: ""))
+                            .timeout(10000)
+                            .into(ivProductImage)
+                    } catch (e: Exception) {
+                        ivProductImage.setImageResource(getIconByCategory(product?.category ?: ""))
+                    }
+                } else {
+                    ivProductImage.setImageResource(getIconByCategory(product?.category ?: ""))
+                }
                 // Отображение информации о товаре
                 tvProductName.text = product?.name ?: "Неизвестный товар"
                 tvProductPrice.text = "₽${String.format("%.2f", product?.price ?: cartItem.price)}"
@@ -44,16 +64,7 @@ class CartAdapter(
                 val totalPrice = (product?.price ?: cartItem.price) * cartItem.quantity
 
 
-                // Установка изображения товара
-                when (product?.category) {
-                    "bulbs" -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
-                    "chandeliers" -> ivProductImage.setImageResource(R.drawable.ic_chandelier)
-                    "floor_lamps" -> ivProductImage.setImageResource(R.drawable.ic_floor_lamp)
-                    "table_lamps" -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
-                    "wall_lamps" -> ivProductImage.setImageResource(R.drawable.ic_wall_lamp)
-                    "led_strips" -> ivProductImage.setImageResource(R.drawable.ic_led)
-                    else -> ivProductImage.setImageResource(R.drawable.ic_lightbulb)
-                }
+
 
                 // Обработчик кнопки уменьшения (-)
                 btnDecrease.setOnClickListener {
@@ -109,6 +120,17 @@ class CartAdapter(
 
         override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
             return oldItem.quantity == newItem.quantity && oldItem.product == newItem.product
+        }
+    }
+    private fun getIconByCategory(category: String): Int {
+        return when (category) {
+            "bulbs" -> R.drawable.ic_lightbulb
+            "chandeliers" -> R.drawable.ic_chandelier
+            "floor_lamps" -> R.drawable.ic_floor_lamp
+            "table_lamps" -> R.drawable.ic_lightbulb
+            "wall_lamps" -> R.drawable.ic_wall_lamp
+            "led_strips" -> R.drawable.ic_led
+            else -> R.drawable.ic_lightbulb
         }
     }
 }

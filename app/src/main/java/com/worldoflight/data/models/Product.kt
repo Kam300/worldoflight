@@ -9,7 +9,7 @@ data class Product(
     val description: String = "",
     val price: Double = 0.0,
     val category: String = "",
-    val image_url: String = "",
+    val image_url: String? = null, // Это поле для URL изображений
     val in_stock: Boolean = true,
     val brand: String = "",
     val power: String = "",
