@@ -29,6 +29,7 @@ class CartActivity : AppCompatActivity() {
         setupRecyclerView()
         setupSwipeToDelete()
         observeViewModel()
+        setupClickListeners() // ДОБАВЛЕНО: вызов метода настройки кликов
 
         // Загружаем данные корзины
         cartViewModel.loadCartItems(this)
@@ -90,7 +91,6 @@ class CartActivity : AppCompatActivity() {
         cartViewModel.cartItems.observe(this) { items ->
             cartAdapter.submitList(items?.toList())
 
-            // Обновляем количество товаров
             val itemsText = when (items?.size ?: 0) {
                 0 -> "Корзина пуста"
                 1 -> "1 товар"
@@ -119,12 +119,30 @@ class CartActivity : AppCompatActivity() {
                 "Бесплатно"
             }
         }
-
         cartViewModel.totalPrice.observe(this) { total ->
-            // Можно добавить отображение общей суммы если нужно
-            supportActionBar?.subtitle = "Итого: ₽${String.format("%.2f", total)}"
+            binding.tvTotal.text = "₽${String.format("%.2f", total)}"
+            supportActionBar?.title = "Корзина"
         }
-
+        // Наблюдение за примененным промокодом
+        cartViewModel.appliedPromotion.observe(this) { promotion ->
+            if (promotion != null) {
+                binding.appliedPromoLayout.visibility = View.VISIBLE
+                binding.tvAppliedPromoCode.text = promotion.promoCode
+                binding.tvAppliedPromoDescription.text = promotion.title
+            } else {
+                binding.appliedPromoLayout.visibility = View.GONE
+            }
+        }
+        // Наблюдение за размером скидки
+        cartViewModel.discountAmount.observe(this) { discount ->
+            if (discount > 0) {
+                binding.discountLayout.visibility = View.VISIBLE
+                binding.tvDiscount.text = "-₽${String.format("%.2f", discount)}"
+                binding.tvDiscountAmount.text = "-₽${String.format("%.2f", discount)}"
+            } else {
+                binding.discountLayout.visibility = View.GONE
+            }
+        }
         cartViewModel.error.observe(this) { error ->
             error?.let {
                 binding.warningLayout?.visibility = View.VISIBLE
@@ -135,9 +153,32 @@ class CartActivity : AppCompatActivity() {
                 }, 3000)
             }
         }
+
+
     }
 
+    private fun setupClickListeners() {
+        // Применение промокода
+        binding.btnApplyPromo.setOnClickListener {
+            val promoCode = binding.etPromoCode.text.toString().trim()
+            if (promoCode.isNotEmpty()) {
+                val subtotal = cartViewModel.subtotalPrice.value ?: 0.0
+                cartViewModel.applyPromoCode(promoCode, subtotal)
+                binding.etPromoCode.text?.clear()
+            } else {
+                Toast.makeText(this, "Введите промокод", Toast.LENGTH_SHORT).show()
+            }
+        }
 
+        // Удаление примененного промокода
+        binding.btnRemovePromo.setOnClickListener {
+            cartViewModel.removePromoCode()
+            Toast.makeText(this, "Промокод удален", Toast.LENGTH_SHORT).show()
+        }
+
+
+
+    }
     override fun onResume() {
         super.onResume()
         cartViewModel.loadCartItems(this)

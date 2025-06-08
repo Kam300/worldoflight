@@ -1,5 +1,6 @@
 package com.worldoflight.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -173,6 +174,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val intent = android.content.Intent(this, CartActivity::class.java)
             startActivity(intent)
         }
+
+
 
         binding.navNotificationsContainer.setOnClickListener {
             selectNavItem(R.id.nav_notifications_container)

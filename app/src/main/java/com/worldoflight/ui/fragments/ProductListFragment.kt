@@ -15,9 +15,11 @@ import com.worldoflight.data.models.Product
 import com.worldoflight.databinding.FragmentProductListBinding
 import com.worldoflight.ui.activities.CategoryProductsActivity
 import com.worldoflight.ui.activities.PopularActivity
+import com.worldoflight.ui.activities.PromotionsActivity
 import com.worldoflight.ui.adapters.CategoryAdapter
 import com.worldoflight.ui.adapters.ProductHorizontalAdapter
 import com.worldoflight.ui.viewmodels.ProductViewModel
+import android.content.Intent
 
 class ProductListFragment : Fragment() {
 
@@ -75,12 +77,35 @@ class ProductListFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // Найдите TextView "Все" в макете и добавьте клик
+        // Переход к популярным товарам
         binding.root.findViewById<TextView>(R.id.tv_see_all_popular)?.setOnClickListener {
-            val intent = android.content.Intent(requireContext(), PopularActivity::class.java)
-            startActivity(intent)
+            try {
+                val intent = Intent(requireContext(), PopularActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                android.util.Log.e("ProductListFragment", "Error starting PopularActivity", e)
+                android.widget.Toast.makeText(requireContext(), "Ошибка открытия страницы", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Переход к акциям (безопасная проверка)
+        try {
+            val promotionsButton = binding.root.findViewById<View>(R.id.btnViewAllPromotions)
+            promotionsButton?.setOnClickListener {
+                try {
+                    val intent = Intent(requireContext(), PromotionsActivity::class.java)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    android.util.Log.e("ProductListFragment", "Error starting PromotionsActivity", e)
+                    android.widget.Toast.makeText(requireContext(), "Ошибка открытия акций", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("ProductListFragment", "btnViewAllPromotions not found in layout", e)
         }
     }
+
+
 
     private fun setupPopularProductsRecyclerView() {
         popularProductsAdapter = ProductHorizontalAdapter(

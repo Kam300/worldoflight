@@ -91,6 +91,12 @@
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.MainActivity" />
+        <activity
+            android:name=".ui.activities.PromotionsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
 
 
 

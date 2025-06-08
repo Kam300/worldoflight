@@ -8,9 +8,6 @@
     android:background="@color/background_primary">
 
     <!-- Toolbar -->
-
-
-    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -21,7 +18,7 @@
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="@color/text_primary" />
 
-
+    <!-- Количество товаров -->
     <TextView
         android:id="@+id/tv_items_count"
         android:layout_width="match_parent"
@@ -49,6 +46,117 @@
         android:orientation="vertical"
         android:background="@color/background_primary"
         android:padding="16dp">
+
+        <!-- Поле для ввода промокода -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/promo_code_input_background"
+            android:padding="4dp"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_promo_code"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Введите промокод"
+                app:boxBackgroundMode="none"
+                app:hintTextColor="@color/text_secondary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_promo_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapCharacters"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/raleway" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_apply_promo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Применить"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/raleway"
+                app:backgroundTint="@color/light_blue"
+                app:cornerRadius="8dp"
+                android:layout_marginStart="8dp"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <!-- Примененный промокод -->
+        <LinearLayout
+            android:id="@+id/applied_promo_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/applied_promo_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check_circle"
+                android:layout_marginEnd="8dp"
+                app:tint="@color/success_green" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_applied_promo_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LIGHT20"
+                    android:textSize="14sp"
+                    android:textColor="@color/success_green"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/raleway" />
+
+                <TextView
+                    android:id="@+id/tv_applied_promo_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Скидка 20%"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="@font/raleway" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_discount_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-₽500"
+                android:textSize="16sp"
+                android:textColor="@color/success_green"
+                android:textStyle="bold"
+                android:fontFamily="@font/raleway" />
+
+            <ImageView
+                android:id="@+id/btn_remove_promo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_close"
+                android:layout_marginStart="8dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="4dp"
+                app:tint="@color/text_secondary" />
+
+        </LinearLayout>
 
         <!-- Сумма -->
         <LinearLayout
@@ -78,6 +186,36 @@
 
         </LinearLayout>
 
+        <!-- Скидка (показывается только при применении промокода) -->
+        <LinearLayout
+            android:id="@+id/discount_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Скидка"
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/raleway" />
+
+            <TextView
+                android:id="@+id/tv_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-₽500,00"
+                android:textSize="16sp"
+                android:textColor="@color/success_green"
+                android:textStyle="bold"
+                android:fontFamily="@font/raleway" />
+
+        </LinearLayout>
+
         <!-- Доставка -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -101,6 +239,37 @@
                 android:text="Бесплатно"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:fontFamily="@font/raleway" />
+
+        </LinearLayout>
+
+        <!-- Итого -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/total_background"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Итого"
+                android:textSize="18sp"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:fontFamily="@font/raleway" />
+
+            <TextView
+                android:id="@+id/tv_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₽12220,00"
+                android:textSize="18sp"
+                android:textColor="@color/light_blue"
                 android:textStyle="bold"
                 android:fontFamily="@font/raleway" />
 

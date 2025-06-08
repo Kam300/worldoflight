@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.worldoflight.data.models.CartItem
+import com.worldoflight.data.models.Promotion
 import com.worldoflight.utils.CartManager
 import kotlinx.coroutines.launch
 
@@ -31,6 +32,14 @@ class CartViewModel : ViewModel() {
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
+
+    private val promotionViewModel = PromotionViewModel()
+
+    private val _appliedPromotion = MutableLiveData<Promotion?>()
+    val appliedPromotion: LiveData<Promotion?> = _appliedPromotion
+
+    private val _discountAmount = MutableLiveData<Double>()
+    val discountAmount: LiveData<Double> = _discountAmount
 
     fun loadCartItems(context: Context) {
         viewModelScope.launch {
@@ -85,23 +94,53 @@ class CartViewModel : ViewModel() {
     }
 
     private fun calculateTotals(items: List<CartItem>) {
-        // Подсчет суммы товаров (подытог)
         val subtotal = items.sumOf { (it.product?.price ?: it.price) * it.quantity }
         _subtotalPrice.value = subtotal
 
-        // Расчет доставки (бесплатная доставка от 1000 рублей)
-        val delivery = if (subtotal >= 1000.0) {
-            0.0
-        } else {
-            60.20 // Фиксированная стоимость доставки
-        }
+        val delivery = if (subtotal >= 1000.0) 0.0 else 60.20
         _deliveryFee.value = delivery
 
-        // ИТОГО = СУММА ТОВАРОВ + ДОСТАВКА
-        val total = subtotal + delivery
+        // Применяем скидку если есть промокод
+        val discount = _discountAmount.value ?: 0.0
+        val total = subtotal + delivery - discount
         _totalPrice.value = total
 
-        // Количество единиц товаров
         _itemsCount.value = items.sumOf { it.quantity }
     }
+    fun applyPromoCode(promoCode: String, subtotal: Double) {
+        promotionViewModel.validatePromoCode(promoCode) { promotion, error ->
+            if (promotion != null) {
+                val discount = calculateDiscount(promotion, subtotal)
+                if (discount > 0) {
+                    _appliedPromotion.value = promotion
+                    _discountAmount.value = discount
+                    calculateTotals(cartItems.value ?: emptyList())
+                } else {
+                    _error.value = "Промокод не применим к данному заказу"
+                }
+            } else {
+                _error.value = error ?: "Неверный промокод"
+            }
+        }
+    }
+    private fun calculateDiscount(promotion: Promotion, subtotal: Double): Double {
+        if (subtotal < promotion.minOrderAmount) return 0.0
+
+        return when (promotion.discountType) {
+            "percentage" -> {
+                val discount = subtotal * promotion.discountValue / 100
+                promotion.maxDiscountAmount?.let { maxDiscount ->
+                    minOf(discount, maxDiscount)
+                } ?: discount
+            }
+            "fixed_amount" -> promotion.discountValue
+            else -> 0.0
+        }
+    }
+    fun removePromoCode() {
+        _appliedPromotion.value = null
+        _discountAmount.value = 0.0
+        calculateTotals(cartItems.value ?: emptyList())
+    }
+
 }
