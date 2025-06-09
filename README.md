@@ -37,7 +37,7 @@ World of Light(мир света) - это мобильное приложени
 - Добавление товаров в корзину
 - Управление количеством
 - Ввод промокоды для скидки
-- Оформление заказов, не реализованно
+- Оформление заказов, не реализованно проверка количества
 
 ## 🛠️ Технологии
 
@@ -135,7 +135,86 @@ CREATE TABLE products (
 );
 
 —— таблица для акции (промокод)
-edit...
+create table public.promotions (
+  id bigserial not null,
+  title text not null,
+  description text null,
+  promo_code text not null,
+  discount_type text not null,
+  discount_value numeric(10, 2) not null,
+  min_order_amount numeric(10, 2) null default 0,
+  max_discount_amount numeric(10, 2) null,
+  image_url text null,
+  start_date timestamp with time zone not null,
+  end_date timestamp with time zone not null,
+  usage_limit integer null,
+  used_count integer null default 0,
+  is_active boolean null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint promotions_pkey primary key (id),
+  constraint promotions_promo_code_key unique (promo_code),
+  constraint promotions_discount_type_check check (
+    (
+      discount_type = any (array['percentage'::text, 'fixed_amount'::text])
+    )
+  )
+) TABLESPACE pg_default;
+
+create index IF not exists idx_promotions_promo_code on public.promotions using btree (promo_code) TABLESPACE pg_default;
+
+create index IF not exists idx_promotions_active on public.promotions using btree (is_active, start_date, end_date) TABLESPACE pg_default;
+
+
+
+
+-- Создание таблицы заказов
+CREATE TABLE orders (
+    id BIGSERIAL PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id),
+    order_number TEXT UNIQUE NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')),
+    total_amount DECIMAL(10,2) NOT NULL,
+    discount_amount DECIMAL(10,2) DEFAULT 0,
+    delivery_fee DECIMAL(10,2) DEFAULT 0,
+    payment_method TEXT NOT NULL,
+    delivery_address TEXT NOT NULL,
+    contact_phone TEXT NOT NULL,
+    contact_email TEXT NOT NULL,
+    promo_code TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    estimated_delivery TIMESTAMP WITH TIME ZONE
+);
+
+-- Создание таблицы элементов заказа
+CREATE TABLE order_items (
+    id BIGSERIAL PRIMARY KEY,
+    order_id BIGINT REFERENCES orders(id) ON DELETE CASCADE,
+    product_id BIGINT REFERENCES products(id),
+    product_name TEXT NOT NULL,
+    product_price DECIMAL(10,2) NOT NULL,
+    quantity INTEGER NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Создание индексов
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+
+-- Удаляем старый триггер если есть DROP TRIGGER IF EXISTS trigger_update_stock ON order_items; DROP FUNCTION IF EXISTS update_product_stock();
+
+-- Создаем новую функцию с логированием CREATE OR REPLACE FUNCTION update_product_stock() RETURNS TRIGGER AS $$ DECLARE current_stock INTEGER; product_name_var TEXT; BEGIN -- Получаем текущие остатки и название товара SELECT stock_quantity, name INTO current_stock, product_name_var FROM products WHERE id = NEW.product_id;
+
+
+-- Логируем начальное состояние
+CREATE TABLE orders ( id BIGSERIAL PRIMARY KEY, user_id UUID REFERENCES auth.users(id), order_number TEXT UNIQUE NOT NULL, status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')), total_amount DECIMAL(10,2) NOT NULL, discount_amount DECIMAL(10,2) DEFAULT 0, delivery_fee DECIMAL(10,2) DEFAULT 0, payment_method TEXT NOT NULL, delivery_address TEXT NOT NULL, contact_phone TEXT NOT NULL, contact_email TEXT NOT NULL, promo_code TEXT, created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), estimated_delivery TIMESTAMP WITH TIME ZONE );
+
+-- Создание таблицы элементов заказа CREATE TABLE order_items ( id BIGSERIAL PRIMARY KEY, order_id BIGINT REFERENCES orders(id) ON DELETE CASCADE, product_id BIGINT REFERENCES products(id), product_name TEXT NOT NULL, product_price DECIMAL(10,2) NOT NULL, quantity INTEGER NOT NULL, total_price DECIMAL(10,2) NOT NULL, created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() );
+
+-- Создание индексов CREATE INDEX idx_orders_user_id ON orders(user_id); CREATE INDEX idx_orders_status ON orders(status); CREATE INDEX idx_order_items_order_id ON order_items(order_id);-- Создание таблицы профилей
+
 ```
 
 4. **Настройка Storage**
