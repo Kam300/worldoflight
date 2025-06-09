@@ -1,5 +1,6 @@
 package com.worldoflight.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -167,6 +168,22 @@ class CartActivity : AppCompatActivity() {
                 binding.etPromoCode.text?.clear()
             } else {
                 Toast.makeText(this, "Введите промокод", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+        binding.btnCheckout.setOnClickListener {
+            val items = cartViewModel.cartItems.value
+            if (items.isNullOrEmpty()) {
+                Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show()
+            } else {
+                val subtotal = cartViewModel.subtotalPrice.value ?: 0.0
+                val delivery = cartViewModel.deliveryFee.value ?: 0.0
+
+                val intent = Intent(this, CheckoutActivity::class.java).apply {
+                    putExtra("subtotal", subtotal)
+                    putExtra("delivery", delivery)
+                }
+                startActivity(intent)
             }
         }
 
