@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             // В MainActivity, в методе onNavigationItemSelected
             R.id.nav_orders -> {
-                supportActionBar?.title = "Заказы"
+
                 val intent = Intent(this, OrdersActivity::class.java)
                 startActivity(intent)
             }

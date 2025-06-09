@@ -370,7 +370,7 @@
                     android:layout_height="wrap_content"
                     android:text="₽814.15"
                     android:textSize="18sp"
-                    android:textColor="@color/light_blue"
+                    android:textColor="@color/yellow"
                     android:textStyle="bold"
                     android:fontFamily="@font/raleway" />
 

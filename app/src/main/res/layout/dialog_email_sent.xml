@@ -23,7 +23,7 @@
             android:src="@drawable/ic_email_sent"
             android:background="@drawable/circle_background_blue"
             android:padding="20dp"
-            app:tint="@color/white"
+            app:tint="@color/yellow"
             android:layout_marginBottom="24dp" />
 
         <!-- Заголовок -->
@@ -58,7 +58,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:fontFamily="@font/raleway"
-            app:backgroundTint="@color/light_blue"
+            app:backgroundTint="@color/yellow"
             android:textColor="@color/white"
             app:cornerRadius="16dp" />
 

@@ -57,8 +57,8 @@
 
     </style>
     <style name="Theme.WorldOfLight.Splash" parent="Theme.WorldOfLight.NoActionBar">
-        <item name="android:windowBackground">@color/onboarding_blue</item>
-        <item name="android:statusBarColor">@color/onboarding_blue</item>
+        <item name="android:windowBackground">@color/nav_icon_selected</item>
+        <item name="android:statusBarColor">@color/nav_icon_selected</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 

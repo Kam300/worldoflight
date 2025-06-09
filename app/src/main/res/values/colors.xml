@@ -47,7 +47,7 @@
     <color name="background_card">#FFFFFF</color>
     <color name="text_hint">#9CA3AF</color>
     <!-- Цвета для навигации -->
-    <color name="nav_icon_selected">#60A5FA</color>
+    <color name="nav_icon_selected">#6A6400</color>
     <color name="nav_icon_unselected">#9CA3AF</color>
     <color name="input_background">#F5F5F5</color>
     <color name="menu_icon_color">#757575</color>

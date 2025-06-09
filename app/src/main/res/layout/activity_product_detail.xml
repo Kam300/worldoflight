@@ -57,19 +57,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         tools:src="@drawable/ic_lightbulb" />
 
-                    <ImageView
-                        android:id="@+id/iv_favorite"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_favorite_border"
-                        android:background="@drawable/favorite_background"
-                        android:padding="8dp"
-                        android:layout_margin="@dimen/spacing_md"
-                        android:clickable="true"
-                        android:focusable="true"
-                        app:tint="@color/text_secondary"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -102,14 +89,6 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="@dimen/spacing_lg" />
 
-            <!-- Варианты товара -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_product_variants"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_lg"
-                android:orientation="horizontal"
-                tools:listitem="@layout/item_product_variant" />
 
             <!-- Описание товара -->
             <TextView
@@ -131,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Подробнее"
-                android:textColor="@color/light_blue"
+                android:textColor="@color/yellow"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:clickable="true"
@@ -155,6 +134,7 @@
         android:gravity="center_vertical">
 
         <ImageView
+            android:id="@+id/iv_favorite"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_favorite_border"

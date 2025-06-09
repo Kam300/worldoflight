@@ -10,6 +10,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.worldoflight.R
 import com.worldoflight.data.models.CartItem
 import com.worldoflight.databinding.ItemCartBinding
+import com.worldoflight.ui.activities.ProductDetailActivity
 
 class CartAdapter(
     private val onQuantityChanged: (Long, Int) -> Unit,
@@ -109,6 +110,33 @@ class CartAdapter(
                 }
 
                 btnDecrease.backgroundTintList = androidx.core.content.ContextCompat.getColorStateList(context, R.color.light_blue)
+                root.setOnClickListener {
+                    val context = root.context
+                    val intent = android.content.Intent(context, ProductDetailActivity::class.java).apply {
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.id)
+                        }
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_NAME, product.name)
+                        }
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_PRICE, product.price)
+                        }
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
+                        }
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
+                        }
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_STOCK, product.stock_quantity)
+                        }
+                        if (product != null) {
+                            putExtra(ProductDetailActivity.EXTRA_PRODUCT_IMAGE_URL, product.image_url)
+                        } // Добавляем URL
+                    }
+                    context.startActivity(intent)
+                }
             }
         }
     }

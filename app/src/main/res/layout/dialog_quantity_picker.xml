@@ -121,14 +121,14 @@
                 android:id="@+id/btn_add_to_cart"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
+                android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="В корзину"
-                android:textSize="16sp"
                 android:fontFamily="@font/raleway"
-                app:backgroundTint="@color/light_blue"
+                android:text="В корзину"
                 android:textColor="@color/white"
-                app:cornerRadius="16dp"
-                android:layout_marginStart="8dp" />
+                android:autoSizeMaxTextSize="16dp"
+                app:backgroundTint="@color/yellow"
+                app:cornerRadius="16dp" />
 
         </LinearLayout>
 

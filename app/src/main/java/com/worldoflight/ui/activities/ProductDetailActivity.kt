@@ -37,7 +37,7 @@ class ProductDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
-        setupVariantsRecyclerView()
+
         loadProductData()
         setupClickListeners()
     }
@@ -47,7 +47,7 @@ class ProductDetailActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            title = "World of Light"
+            title = "Мир Света"
         }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -55,18 +55,7 @@ class ProductDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupVariantsRecyclerView() {
-        variantsAdapter = ProductVariantsAdapter(::updateMainImage)
 
-        binding.rvProductVariants.apply {
-            layoutManager = LinearLayoutManager(
-                this@ProductDetailActivity,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-            adapter = variantsAdapter
-        }
-    }
 
     private fun loadProductData() {
         val productId = intent.getLongExtra(EXTRA_PRODUCT_ID, -1)
@@ -87,7 +76,7 @@ class ProductDetailActivity : AppCompatActivity() {
         )
 
         updateUI()
-        loadProductVariants()
+
     }
 
 

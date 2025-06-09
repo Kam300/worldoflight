@@ -189,7 +189,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:fontFamily="@font/raleway"
-            app:backgroundTint="@color/light_blue"
+            app:backgroundTint="@color/yellow"
             android:textColor="@color/white"
             app:cornerRadius="16dp"
             android:layout_marginTop="32dp"

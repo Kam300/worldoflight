@@ -20,6 +20,7 @@ import com.worldoflight.ui.adapters.CategoryAdapter
 import com.worldoflight.ui.adapters.ProductHorizontalAdapter
 import com.worldoflight.ui.viewmodels.ProductViewModel
 import android.content.Intent
+import com.worldoflight.ui.activities.SearchActivity
 
 class ProductListFragment : Fragment() {
 
@@ -47,6 +48,14 @@ class ProductListFragment : Fragment() {
         setupClickListeners()
         setupObservers()
         loadData()
+        setupSearchButton()
+    }
+    private fun setupSearchButton() {
+        // Если у вас есть кнопка поиска в toolbar или layout
+        binding.btnSearch?.setOnClickListener {
+            val intent = Intent(requireContext(), SearchActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupCategoriesRecyclerView() {

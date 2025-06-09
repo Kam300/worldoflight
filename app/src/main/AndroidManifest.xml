@@ -11,7 +11,7 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_lamp_promo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -120,6 +120,12 @@
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.MainActivity" />
+        <activity
+            android:name=".ui.activities.SearchActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
 
 
     </application>

@@ -48,10 +48,8 @@
             android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
             android:textColor="@color/primary_gold"
             android:textStyle="bold"
-            android:layout_marginStart="@dimen/spacing_md"
-            android:layout_marginTop="@dimen/spacing_xs"
-            app:layout_constraintTop_toBottomOf="@id/tv_product_name"
-            app:layout_constraintStart_toEndOf="@id/iv_product_image" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
 
@@ -60,14 +58,12 @@
             android:id="@+id/quantity_controls"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_sm"
             android:background="@drawable/quantity_background"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@id/iv_product_image"
-            app:layout_constraintEnd_toStartOf="@+id/tv_item_total"
-            app:layout_constraintStart_toEndOf="@id/iv_product_image"
-            app:layout_constraintTop_toBottomOf="@id/tv_product_price">
+            app:layout_constraintEnd_toStartOf="@+id/tv_product_price"
+            app:layout_constraintStart_toEndOf="@id/iv_product_image">
 
             <ImageButton
                 android:id="@+id/btn_decrease"
@@ -97,16 +93,6 @@
                 app:tint="@color/text_primary" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_item_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="₽752.00"
-            android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
