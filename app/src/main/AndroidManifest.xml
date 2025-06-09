@@ -115,6 +115,12 @@
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.CartActivity" />
+        <activity
+            android:name=".ui.activities.OrdersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
 
     </application>
 

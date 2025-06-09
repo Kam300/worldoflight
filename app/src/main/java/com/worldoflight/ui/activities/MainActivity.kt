@@ -137,9 +137,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 supportActionBar?.title = "Избранное"
                 replaceFragment(FavoritesFragment())
             }
+            // В MainActivity, в методе onNavigationItemSelected
             R.id.nav_orders -> {
-                android.widget.Toast.makeText(this, "Заказы", android.widget.Toast.LENGTH_SHORT).show()
+                supportActionBar?.title = "Заказы"
+                val intent = Intent(this, OrdersActivity::class.java)
+                startActivity(intent)
             }
+
             R.id.nav_notifications -> {
                 supportActionBar?.title = "Уведомления"
                 replaceFragment(NotificationsFragment())

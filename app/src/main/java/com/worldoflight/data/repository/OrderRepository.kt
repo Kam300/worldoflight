@@ -2,6 +2,7 @@ package com.worldoflight.data.repository
 
 import com.worldoflight.data.models.CheckoutRequest
 import com.worldoflight.data.models.Order
+import com.worldoflight.data.models.OrderItem
 import com.worldoflight.data.remote.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
@@ -200,5 +201,91 @@ class OrderRepository {
         calendar.add(Calendar.DAY_OF_YEAR, 3)
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
         return formatter.format(calendar.time)
+    }
+    suspend fun getUserOrders(): Result<List<Order>> {
+        return try {
+            val currentUser = supabase.auth.currentUserOrNull()
+            if (currentUser == null) {
+                return Result.failure(Exception("Пользователь не авторизован"))
+            }
+
+            android.util.Log.d("OrderRepository", "Loading orders for user: ${currentUser.id}")
+
+            val orders = supabase.from("orders")
+                .select {
+                    filter {
+                        eq("user_id", currentUser.id)
+                    }
+                    // ИСПРАВЛЕНО: Правильный синтаксис для Kotlin Supabase
+                    order("created_at", order = io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                }
+                .decodeList<Order>()
+
+            android.util.Log.d("OrderRepository", "Loaded ${orders.size} orders")
+            Result.success(orders)
+        } catch (e: Exception) {
+            android.util.Log.e("OrderRepository", "Error loading orders", e)
+            Result.failure(e)
+        }
+    }
+
+
+    // НОВЫЙ МЕТОД: Получение элементов заказа
+    suspend fun getOrderItems(orderId: Long): Result<List<OrderItem>> {
+        return try {
+            val orderItems = supabase.from("order_items")
+                .select {
+                    filter {
+                        eq("order_id", orderId)
+                    }
+                }
+                .decodeList<OrderItem>()
+
+            Result.success(orderItems)
+        } catch (e: Exception) {
+            android.util.Log.e("OrderRepository", "Error loading order items", e)
+            Result.failure(e)
+        }
+    }
+
+    // НОВЫЙ МЕТОД: Получение заказа с элементами
+    suspend fun getOrderWithItems(orderId: Long): Result<Pair<Order, List<OrderItem>>> {
+        return try {
+            val orderResult = supabase.from("orders")
+                .select {
+                    filter {
+                        eq("id", orderId)
+                    }
+                }
+                .decodeSingle<Order>()
+
+            val itemsResult = getOrderItems(orderId)
+
+            if (itemsResult.isSuccess) {
+                Result.success(Pair(orderResult, itemsResult.getOrNull() ?: emptyList()))
+            } else {
+                Result.success(Pair(orderResult, emptyList()))
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("OrderRepository", "Error loading order with items", e)
+            Result.failure(e)
+        }
+    }
+
+    // НОВЫЙ МЕТОД: Обновление статуса заказа
+    suspend fun updateOrderStatus(orderId: Long, status: String): Result<Boolean> {
+        return try {
+            supabase.from("orders")
+                .update(mapOf("status" to status)) {
+                    filter {
+                        eq("id", orderId)
+                    }
+                }
+
+            Result.success(true)
+        } catch (e: Exception) {
+            android.util.Log.e("OrderRepository", "Error updating order status", e)
+            Result.failure(e)
+        }
     }
 }
