@@ -107,15 +107,16 @@ class OrderRepository {
 
             android.util.Log.d("OrderRepository", "Inserting order with user_id: ${orderInsert.userId}")
 
-            // Вставляем заказ в базу данных
-            val createdOrder = supabase.from("orders")
+            val createdOrders = supabase.from("orders")
                 .insert(orderInsert) {
                     select()
                 }
-                .decodeSingle<Order>()
+                .decodeList<Order>()
 
-            android.util.Log.d("OrderRepository", "Order created with ID: ${createdOrder.id}")
+            val createdOrder = createdOrders.firstOrNull()
+                ?: throw Exception("Failed to create order")
 
+            android.util.Log.d("OrderRepository", "Order created: ${createdOrder.id}, number: ${createdOrder.orderNumber}")
             // Создаем элементы заказа и обновляем остатки
             createOrderItems(createdOrder.id, checkoutRequest.cartItems)
 
@@ -157,14 +158,19 @@ class OrderRepository {
         try {
             android.util.Log.d("OrderRepository", "Creating order items for order ID: $orderId")
 
+            if (orderId == 0L) {
+                throw Exception("Invalid order ID: $orderId")
+            }
+
             val orderItems = cartItems.map { cartItem ->
                 val productId = cartItem.product?.id ?: cartItem.product_id
                 val quantity = cartItem.quantity
 
-                android.util.Log.d("OrderRepository", "Adding item: Product ID $productId, Quantity $quantity")
+                android.util.Log.d("OrderRepository",
+                    "Creating order item: orderId=$orderId, productId=$productId, quantity=$quantity")
 
                 OrderItemInsert(
-                    orderId = orderId,
+                    orderId = orderId,  // Убедитесь, что это не 0
                     productId = productId,
                     productName = cartItem.product?.name ?: "Товар",
                     productPrice = cartItem.product?.price ?: cartItem.price,
@@ -173,20 +179,21 @@ class OrderRepository {
                 )
             }
 
+            android.util.Log.d("OrderRepository", "Inserting ${orderItems.size} order items")
+
             // Вставляем элементы заказа
             supabase.from("order_items")
                 .insert(orderItems)
 
             android.util.Log.d("OrderRepository", "Order items inserted successfully")
 
-            // Обновляем остатки товаров вручную
-            updateProductStock(cartItems)
-
         } catch (e: Exception) {
-            android.util.Log.e("OrderRepository", "Error creating order items", e)
+            android.util.Log.e("OrderRepository", "Error creating order items: ${e.message}", e)
             throw e
         }
     }
+
+
 
     private suspend fun updateProductStock(cartItems: List<com.worldoflight.data.models.CartItem>) {
         for (cartItem in cartItems) {
