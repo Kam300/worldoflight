@@ -37,7 +37,7 @@ World of Light(мир света) - это мобильное приложени
 - Добавление товаров в корзину
 - Управление количеством
 - Ввод промокоды для скидки
-- Оформление заказов, не реализованно проверка количества
+- Оформление заказов
 
 ## 🛠️ Технологии
 
@@ -198,22 +198,39 @@ CREATE TABLE order_items (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Создание индексов
-CREATE INDEX idx_orders_user_id ON orders(user_id);
-CREATE INDEX idx_orders_status ON orders(status);
-CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+-- Удаляем старую функцию
+DROP TRIGGER IF EXISTS trigger_update_stock_clean ON order_items;
+DROP FUNCTION IF EXISTS update_product_stock_clean();
 
--- Удаляем старый триггер если есть DROP TRIGGER IF EXISTS trigger_update_stock ON order_items; DROP FUNCTION IF EXISTS update_product_stock();
+-- Создаем функцию с SECURITY DEFINER
+CREATE OR REPLACE FUNCTION update_product_stock_clean()
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SECURITY DEFINER  -- ВОТ КЛЮЧЕВОЕ РЕШЕНИЕ!
+AS $$
+BEGIN
+    -- Логируем для отладки
+    RAISE NOTICE 'Trigger fired: product_id=%, quantity=%', NEW.product_id, NEW.quantity;
+    
+    -- Простое обновление остатков
+    UPDATE products 
+    SET 
+        stock_quantity = stock_quantity - NEW.quantity,
+        in_stock = (stock_quantity - NEW.quantity > 0)
+    WHERE id = NEW.product_id;
+    
+    -- Логируем результат
+    RAISE NOTICE 'Stock updated for product %', NEW.product_id;
+    
+    RETURN NEW;
+END;
+$$;
 
--- Создаем новую функцию с логированием CREATE OR REPLACE FUNCTION update_product_stock() RETURNS TRIGGER AS $$ DECLARE current_stock INTEGER; product_name_var TEXT; BEGIN -- Получаем текущие остатки и название товара SELECT stock_quantity, name INTO current_stock, product_name_var FROM products WHERE id = NEW.product_id;
-
-
--- Логируем начальное состояние
-CREATE TABLE orders ( id BIGSERIAL PRIMARY KEY, user_id UUID REFERENCES auth.users(id), order_number TEXT UNIQUE NOT NULL, status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')), total_amount DECIMAL(10,2) NOT NULL, discount_amount DECIMAL(10,2) DEFAULT 0, delivery_fee DECIMAL(10,2) DEFAULT 0, payment_method TEXT NOT NULL, delivery_address TEXT NOT NULL, contact_phone TEXT NOT NULL, contact_email TEXT NOT NULL, promo_code TEXT, created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), estimated_delivery TIMESTAMP WITH TIME ZONE );
-
--- Создание таблицы элементов заказа CREATE TABLE order_items ( id BIGSERIAL PRIMARY KEY, order_id BIGINT REFERENCES orders(id) ON DELETE CASCADE, product_id BIGINT REFERENCES products(id), product_name TEXT NOT NULL, product_price DECIMAL(10,2) NOT NULL, quantity INTEGER NOT NULL, total_price DECIMAL(10,2) NOT NULL, created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() );
-
--- Создание индексов CREATE INDEX idx_orders_user_id ON orders(user_id); CREATE INDEX idx_orders_status ON orders(status); CREATE INDEX idx_order_items_order_id ON order_items(order_id);-- Создание таблицы профилей
+-- Создаем новый триггер
+CREATE TRIGGER trigger_update_stock_clean
+    AFTER INSERT ON order_items
+    FOR EACH ROW
+    EXECUTE FUNCTION update_product_stock_clean();
 
 ```
 
