@@ -158,19 +158,14 @@ class OrderRepository {
         try {
             android.util.Log.d("OrderRepository", "Creating order items for order ID: $orderId")
 
-            if (orderId == 0L) {
-                throw Exception("Invalid order ID: $orderId")
-            }
-
             val orderItems = cartItems.map { cartItem ->
                 val productId = cartItem.product?.id ?: cartItem.product_id
                 val quantity = cartItem.quantity
 
-                android.util.Log.d("OrderRepository",
-                    "Creating order item: orderId=$orderId, productId=$productId, quantity=$quantity")
+                android.util.Log.d("OrderRepository", "Adding item: Product ID $productId, Quantity $quantity")
 
                 OrderItemInsert(
-                    orderId = orderId,  // Убедитесь, что это не 0
+                    orderId = orderId,
                     productId = productId,
                     productName = cartItem.product?.name ?: "Товар",
                     productPrice = cartItem.product?.price ?: cartItem.price,
@@ -179,59 +174,25 @@ class OrderRepository {
                 )
             }
 
-            android.util.Log.d("OrderRepository", "Inserting ${orderItems.size} order items")
-
-            // Вставляем элементы заказа
+            // Вставляем элементы заказа - триггер автоматически обновит остатки
             supabase.from("order_items")
                 .insert(orderItems)
 
-            android.util.Log.d("OrderRepository", "Order items inserted successfully")
+            android.util.Log.d("OrderRepository", "Order items inserted - trigger should update stock")
+
+            // УДАЛИТЕ ЭТУ СТРОКУ! Она перезаписывает изменения триггера
+            // updateProductStock(cartItems)
 
         } catch (e: Exception) {
-            android.util.Log.e("OrderRepository", "Error creating order items: ${e.message}", e)
+            android.util.Log.e("OrderRepository", "Error creating order items", e)
             throw e
         }
     }
 
 
 
-    private suspend fun updateProductStock(cartItems: List<com.worldoflight.data.models.CartItem>) {
-        for (cartItem in cartItems) {
-            try {
-                val productId = cartItem.product?.id ?: cartItem.product_id
-                val quantity = cartItem.quantity
 
-                // Получаем текущие остатки
-                val currentProduct = supabase.from("products")
-                    .select {
-                        filter {
-                            eq("id", productId)
-                        }
-                    }
-                    .decodeSingle<com.worldoflight.data.models.Product>()
 
-                val newStock = currentProduct.stock_quantity - quantity
-                val inStock = newStock > 0
-
-                // Обновляем остатки
-                supabase.from("products")
-                    .update(mapOf(
-                        "stock_quantity" to newStock,
-                        "in_stock" to inStock
-                    )) {
-                        filter {
-                            eq("id", productId)
-                        }
-                    }
-
-                android.util.Log.d("OrderRepository",
-                    "Updated stock for product $productId: ${currentProduct.stock_quantity} -> $newStock")
-
-            } catch (e: Exception) {
-                android.util.Log.e("OrderRepository", "Error updating stock for product", e)
-            }
-        }
-    }
 
     private fun generateOrderNumber(): String {
         val timestamp = System.currentTimeMillis()
