@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <!-- Изображение -->
+    <ImageView
+        android:id="@+id/iv_image"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_marginBottom="48dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/onboarding_welcome" />
+
+    <!-- Заголовок -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Добро пожаловать в Мир Света"
+        android:textSize="28sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:fontFamily="@font/raleway"
+        android:textAlignment="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Описание -->
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Откройте для себя удивительный мир качественного освещения"
+        android:textSize="16sp"
+        android:textColor="@color/white_transparent"
+        android:fontFamily="@font/raleway"
+        android:textAlignment="center"
+        android:lineSpacingExtra="4dp" />
+
+</LinearLayout>

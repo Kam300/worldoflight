@@ -8,8 +8,6 @@
     <application
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
-
-
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,16 +18,28 @@
         android:theme="@style/Theme.WorldOfLight.NoActionBar"
         tools:targetApi="31">
 
-        <!-- Экран входа как главный -->
+        <!-- SPLASH SCREEN как главная активность -->
         <activity
-            android:name=".ui.activities.LoginActivity"
+            android:name=".ui.activities.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.WorldOfLight.NoActionBar">
+            android:theme="@style/Theme.WorldOfLight.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Онбординг -->
+        <activity
+            android:name=".ui.activities.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
+        <!-- Экран входа (убираем intent-filter) -->
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
 
         <!-- Остальные активности аутентификации -->
         <activity
@@ -47,36 +57,6 @@
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar" />
 
-        <!-- Главная активность -->
-        <activity
-            android:name=".ui.activities.MainActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
-
-        <!-- Активность корзины -->
-        <activity
-            android:name=".ui.activities.CartActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WorldOfLight.NoActionBar"
-            android:parentActivityName=".ui.activities.MainActivity" />
-
-        <!-- Активность деталей товара -->
-        <activity
-            android:name=".ui.activities.ProductDetailActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WorldOfLight.NoActionBar"
-            android:parentActivityName=".ui.activities.MainActivity" />
-
-        <!-- ДОБАВИТЬ ЭТУ АКТИВНОСТЬ -->
-        <activity
-            android:name=".ui.activities.CategoryProductsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WorldOfLight.NoActionBar"
-            android:parentActivityName=".ui.activities.MainActivity" />
-        <activity android:name=".ui.activities.PopularActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WorldOfLight.NoActionBar"
-            android:parentActivityName=".ui.activities.MainActivity" />
         <activity
             android:name=".ui.activities.PasswordResetVerificationActivity"
             android:exported="false"
@@ -86,24 +66,55 @@
             android:name=".ui.activities.NewPasswordActivity"
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
+        <!-- Главная активность -->
+        <activity
+            android:name=".ui.activities.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar" />
+
+        <!-- Остальные активности -->
+        <activity
+            android:name=".ui.activities.CartActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
+        <activity
+            android:name=".ui.activities.ProductDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
+        <activity
+            android:name=".ui.activities.CategoryProductsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
+        <activity
+            android:name=".ui.activities.PopularActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorldOfLight.NoActionBar"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
         <activity
             android:name=".ui.activities.EditProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.MainActivity" />
+
         <activity
             android:name=".ui.activities.PromotionsActivity"
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.MainActivity" />
+
         <activity
             android:name=".ui.activities.CheckoutActivity"
             android:exported="false"
             android:theme="@style/Theme.WorldOfLight.NoActionBar"
             android:parentActivityName=".ui.activities.CartActivity" />
-
-
-
 
     </application>
 

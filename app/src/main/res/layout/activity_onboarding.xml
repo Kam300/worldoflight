@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/onboarding_blue">
+
+    <!-- ViewPager для слайдов -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Нижняя панель с индикаторами и кнопками -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Индикаторы точек -->
+        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+            android:id="@+id/dots_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="32dp"
+            app:dotsColor="@color/white_transparent"
+            app:dotsCornerRadius="8dp"
+            app:dotsSize="12dp"
+            app:dotsSpacing="8dp"
+            app:dotsWidthFactor="2.5"
+            app:selectedDotColor="@color/white"
+            app:progressMode="true" />
+
+        <!-- Кнопки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Кнопка Пропустить -->
+            <TextView
+                android:id="@+id/btn_skip"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Пропустить"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <!-- Кнопка Далее -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_next"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="2"
+                android:text="Далее"
+                android:textSize="16sp"
+                android:textColor="@color/onboarding_blue"
+                android:fontFamily="@font/raleway"
+                android:textStyle="bold"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="28dp"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
