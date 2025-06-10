@@ -20,19 +20,19 @@ class OnboardingActivity : AppCompatActivity() {
             title = "Добро пожаловать в Мир Света",
             description = "Откройте для себя удивительный мир качественного освещения",
             imageRes = R.drawable.onboarding_welcome,
-            backgroundColor = R.color.onboarding_blue
+            backgroundColor = R.color.accent_purple
         ),
         OnboardingPage(
-            title = "Начнем путешествие",
-            description = "Умная, великолепная и модная коллекция. Изучите сейчас",
-            imageRes = R.drawable.onboarding_journey,
-            backgroundColor = R.color.onboarding_blue
+            title = "Бесплатная Доставка",
+            description = "Заказывайте товары, доставка бесплатная",
+            imageRes = R.drawable.ic_delivery,
+            backgroundColor = R.color.accent_purple
         ),
         OnboardingPage(
-            title = "У Вас Есть Сила, Чтобы",
-            description = "В вашей комнате много красивых и привлекательных растений",
+            title = "Доставка за 1 час",
+            description = "И еще смотрите раздел акции, там промокоды",
             imageRes = R.drawable.onboarding_power,
-            backgroundColor = R.color.onboarding_blue
+            backgroundColor = R.color.accent_purple
         )
     )
 

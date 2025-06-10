@@ -1,5 +1,6 @@
 package com.worldoflight.ui.activities
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -149,8 +150,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 replaceFragment(NotificationsFragment())
             }
             R.id.nav_settings -> {
-                android.widget.Toast.makeText(this, "Настройки", android.widget.Toast.LENGTH_SHORT).show()
-            }
+                val intent = android.content.Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                }
             R.id.nav_logout -> {
                 showLogoutDialog()
             }
