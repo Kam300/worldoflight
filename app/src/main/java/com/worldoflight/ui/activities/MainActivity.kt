@@ -152,13 +152,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 android.widget.Toast.makeText(this, "Настройки", android.widget.Toast.LENGTH_SHORT).show()
             }
             R.id.nav_logout -> {
-                // Добавьте логику выхода
-                android.widget.Toast.makeText(this, "Выход", android.widget.Toast.LENGTH_SHORT).show()
+                showLogoutDialog()
             }
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun showLogoutDialog() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Выход")
+            .setMessage("Вы уверены, что хотите выйти из аккаунта?")
+            .setPositiveButton("Выйти") { _, _ ->
+                performLogout()
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    private fun performLogout() {
+        // Показываем прогресс
+        val progressDialog = android.app.ProgressDialog(this).apply {
+            setMessage("Выход из аккаунта...")
+            setCancelable(false)
+            show()
+        }
+
+        profileViewModel.logout()
+
+        // ИСПРАВЛЕНО: Слушаем результат выхода
+        profileViewModel.logoutSuccess.observe(this) { success ->
+            if (success) {
+                progressDialog.dismiss()
+
+                // Переходим к экрану входа только после успешного выхода
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+        }
+
+        // Также слушаем ошибки
+        profileViewModel.errorMessage.observe(this) { error ->
+            error?.let {
+                progressDialog.dismiss()
+                android.widget.Toast.makeText(this, "Ошибка выхода: $it", android.widget.Toast.LENGTH_LONG).show()
+                profileViewModel.clearError()
+            }
+        }
     }
 
     private fun setupBottomNavigation() {

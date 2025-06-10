@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.worldoflight.data.models.CheckoutRequest
 import com.worldoflight.data.models.Order
+import com.worldoflight.data.models.UpdateProfileRequest
 import com.worldoflight.data.models.UserProfile
 import com.worldoflight.data.remote.SupabaseClient
 import com.worldoflight.data.repository.AuthRepository
@@ -37,7 +38,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
     init {
         loadUserProfile()
-        _selectedPaymentMethod.value = "card" // По умолчанию карта
+        _selectedPaymentMethod.value = "card"
     }
 
     private fun loadUserProfile() {
@@ -56,15 +57,40 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         _selectedPaymentMethod.value = method
     }
 
-    fun createOrder(
-        email: String,
-        phone: String,
-        address: String
-    ) {
+    // МЕТОД: Обновление телефона
+    fun updatePhone(phone: String) {
+        viewModelScope.launch {
+            val updateRequest = UpdateProfileRequest(phone = phone)
+            authRepository.updateUserProfile(updateRequest)
+                .onSuccess { updatedProfile ->
+                    _userProfile.value = updatedProfile
+                    android.util.Log.d("CheckoutViewModel", "Phone updated successfully")
+                }
+                .onFailure { exception ->
+                    android.util.Log.e("CheckoutViewModel", "Failed to update phone", exception)
+                }
+        }
+    }
+
+    // МЕТОД: Обновление адреса
+    fun updateAddress(address: String) {
+        viewModelScope.launch {
+            val updateRequest = UpdateProfileRequest(address = address)
+            authRepository.updateUserProfile(updateRequest)
+                .onSuccess { updatedProfile ->
+                    _userProfile.value = updatedProfile
+                    android.util.Log.d("CheckoutViewModel", "Address updated successfully")
+                }
+                .onFailure { exception ->
+                    android.util.Log.e("CheckoutViewModel", "Failed to update address", exception)
+                }
+        }
+    }
+
+    fun createOrder(email: String, phone: String, address: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // Проверяем авторизацию
                 val currentUser = SupabaseClient.client.auth.currentUserOrNull()
                 if (currentUser == null) {
                     _error.value = "Необходимо войти в аккаунт для оформления заказа"
@@ -102,7 +128,6 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
 
     fun clearError() {
         _error.value = null

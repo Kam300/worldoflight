@@ -35,7 +35,7 @@
                 android:textSize="18sp"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold"
-                android:fontFamily="@font/raleway"
+                android:fontFamily="sans-serif"
                 android:layout_marginBottom="16dp" />
 
             <!-- Email -->
@@ -67,7 +67,7 @@
                         android:text="emmanuel@gmail.com"
                         android:textSize="16sp"
                         android:textColor="@color/text_primary"
-                        android:fontFamily="@font/raleway" />
+                        android:fontFamily="sans-serif" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -75,28 +75,23 @@
                         android:text="Email"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
-                        android:fontFamily="@font/raleway" />
+                        android:fontFamily="sans-serif" />
 
                 </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/btn_edit_email"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_edit"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/text_secondary" />
-
             </LinearLayout>
 
-            <!-- Phone -->
+            <!-- Phone (КЛИКАБЕЛЬНЫЙ) -->
             <LinearLayout
+                android:id="@+id/phone_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@drawable/contact_field_background"
                 android:padding="16dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -118,15 +113,16 @@
                         android:text="+234-811-732-5298"
                         android:textSize="16sp"
                         android:textColor="@color/text_primary"
-                        android:fontFamily="@font/raleway" />
+                        android:fontFamily="sans-serif" />
 
                     <TextView
+                        android:id="@+id/tv_phone_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Телефон"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
-                        android:fontFamily="@font/raleway" />
+                        android:fontFamily="sans-serif" />
 
                 </LinearLayout>
 
@@ -156,17 +152,20 @@
                 android:textSize="18sp"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold"
-                android:fontFamily="@font/raleway"
+                android:fontFamily="sans-serif"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Address -->
+            <!-- Address (КЛИКАБЕЛЬНЫЙ) -->
             <LinearLayout
+                android:id="@+id/address_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@drawable/contact_field_background"
                 android:padding="16dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
                     android:id="@+id/tv_address"
@@ -176,7 +175,14 @@
                     android:text="1082 Аэропорт, Нигерии"
                     android:textSize="16sp"
                     android:textColor="@color/text_primary"
-                    android:fontFamily="@font/raleway" />
+                    android:fontFamily="sans-serif" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_edit"
+                    app:tint="@color/text_secondary" />
+
 
                 <ImageView
                     android:layout_width="24dp"
@@ -386,7 +392,7 @@
                 android:textColor="@color/white"
                 android:fontFamily="@font/raleway"
                 android:textStyle="bold"
-                app:backgroundTint="@color/light_blue"
+                app:backgroundTint="@color/yellow"
                 app:cornerRadius="16dp"
                 android:textAllCaps="false" />
 

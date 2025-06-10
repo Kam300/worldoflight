@@ -62,9 +62,17 @@ class SearchProductAdapter(
 
                 // Клик по карточке - открыть детали
                 root.setOnClickListener {
-                    val intent = Intent(root.context, ProductDetailActivity::class.java)
-                    intent.putExtra("product_id", product.id)
-                    root.context.startActivity(intent)
+                    val context = root.context
+                    val intent = android.content.Intent(context, ProductDetailActivity::class.java).apply {
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.id)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_NAME, product.name)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_PRICE, product.price)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_CATEGORY, product.category)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_DESCRIPTION, product.description)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_STOCK, product.stock_quantity)
+                        putExtra(ProductDetailActivity.EXTRA_PRODUCT_IMAGE_URL, product.image_url) // Добавляем URL
+                    }
+                    context.startActivity(intent)
                 }
 
                 // Кнопка добавить в корзину

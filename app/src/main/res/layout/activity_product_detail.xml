@@ -90,13 +90,6 @@
                 android:layout_marginBottom="@dimen/spacing_lg" />
 
 
-            <!-- Описание товара -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Вставка Max Air 270 Обеспечивает Непревзойденный Комфорт В Течение Всего Дня. Изящный Дизайн ......."
-                android:textAppearance="@style/TextAppearance.WorldOfLight.Body"
-                android:layout_marginBottom="@dimen/spacing_sm" />
 
             <TextView
                 android:id="@+id/tv_product_description"
